@@ -71,4 +71,4 @@ contract Tokenization {
     function getCollateralNumber(uint _ownerId) public view onlyPlatformOrOwner returns(uint count) {
         return percentageOwners[_ownerId].collaterals.length;
     }
-}
+} 
