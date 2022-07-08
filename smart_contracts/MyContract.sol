@@ -13,4 +13,3 @@ contract MyContract {
     return name;
   }
 }
-
