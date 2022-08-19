@@ -30,6 +30,13 @@ contract AssetToken {
     uint public assetUsableArea;                // usable area of the tokenized asset
     uint public assetId;                        // asset identification number (In Brazil, Cadastro Imobiliário Brasileiro (CIB) (???) )
 
+    // Define events
+
+    event showOwners(address[] _owners);
+    event showEffectiveOwner(address _effectiveOwner);
+    event showPercentageOwners(Owner[] _percentageOwners);
+    event ShowCollaterals(Collateral[] _collaterals);
+
     // Define modifiers for function usage
 
     modifier onlyPlatform {
@@ -74,9 +81,11 @@ contract AssetToken {
     }
 
     function isAddressOwner(address _address) public view returns(bool, uint256) {
+
         for (uint256 i = 0; i < owners.length; i += 1) {
 	        if (_address == owners[i]) return (true, i);
 	    }
+
 	    return (false, 0); 
     }
 
@@ -106,31 +115,33 @@ contract AssetToken {
     
     // Function to remove owner from owners array
 
-    function removeOwner(address _owner) private
-    {
+    function removeOwner(address _owner) private {
+
         (bool isOwner, uint256 index) = isAddressOwner(_owner);
 
         if (!isOwner || _owner == effectiveOwner) return; // dont delete when address isnt on array or when owner is effective owner
 
         owners[index] = owners[owners.length - 1];
         owners.pop();
+
+        emit showOwners(owners);
     }
 
     // Function to split ownership between owners
 
-    function transferOwnership(uint _transferPercentage, address _buyer, bool _isEffectiveOwnerTransfer) public onlyPlatformOrOwner 
-    {
+    function transferOwnership(uint _transferShares, address _buyer, bool _isEffectiveOwnerTransfer) public onlyPlatformOrOwner {
 
         Owner storage payer = percentageOwners[msg.sender];
-        require((payer.shares - getCollateralShares(msg.sender)) >= _transferPercentage);
+        require((payer.shares - getCollateralShares(msg.sender)) >= _transferShares);
 
         if (_isEffectiveOwnerTransfer) {
             require(msg.sender == effectiveOwner);
             effectiveOwner = _buyer;
+            emit showEffectiveOwner(effectiveOwner);
         }
 
-        payer.shares -= _transferPercentage;
-        percentageOwners[_buyer].shares += _transferPercentage;
+        payer.shares -= _transferShares;
+        percentageOwners[_buyer].shares += _transferShares;
 
         (bool isBuyerOwner,) =  isAddressOwner(_buyer);
 
@@ -138,4 +149,36 @@ contract AssetToken {
 
         if (payer.shares == 0) removeOwner(msg.sender);
     }
+
+    // Function to create collateral from sender token balance to bank address
+    
+    function createCollateral(address _bankId, uint _collateralShares, uint _expirationDate) public onlyPlatformOrOwner {
+
+        Owner storage owner = percentageOwners[msg.sender];
+        require((owner.shares - getCollateralShares(msg.sender)) >= _collateralShares);
+
+        owner.collaterals.push(Collateral({
+            bankId: _bankId,
+            collateralShares: _collateralShares,
+            expirationDate: _expirationDate
+        }));
+
+        emit ShowCollaterals(owner.collaterals);
+    }
+
+    // Function to delete collateral associated with bank address of msg.sender from owner
+
+    function deleteCollateral(address _ownerAddress, uint _collateralShares, uint _expirationDate) public {
+
+        Collateral[] storage collaterals =  percentageOwners[_ownerAddress].collaterals;
+
+        for(uint256 i = 0; i < collaterals.length; i++) {
+            if(collaterals[i].bankId == msg.sender && collaterals[i].collateralShares == _collateralShares && collaterals[i].expirationDate == _expirationDate){
+                collaterals[i] = collaterals[collaterals.length -1];
+                collaterals.pop();
+                break;
+            }
+        }
+    }
+
 }
