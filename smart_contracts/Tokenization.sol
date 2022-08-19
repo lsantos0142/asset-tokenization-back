@@ -71,7 +71,6 @@ contract AssetToken {
         percentageOwners[_effectiveOwner].shares = totalSupply;
 
         owners.push(effectiveOwner);
-        owners.push(creator);
     }
 
     function isAddressOwner(address _address) public view returns(bool, uint256) {
@@ -93,21 +92,21 @@ contract AssetToken {
         return percentageOwners[_owner].collaterals.length;
     }
 
-    // Get shares as collaterals by owner
+    // Function to get total number of shares that are being used as collateral
 
     function getCollateralShares(address _owner) public view onlyPlatformOrOwner returns(uint) {
         Collateral[] storage collaterals =  percentageOwners[_owner].collaterals;
         uint256 sum = 0;
 
-        for(uint256 i = 0; i < collaterals.length; i++)
+        for(uint256 i = 0; i < collaterals.length; i++) {
             sum = sum + collaterals[i].collateralShares;
-
+        }
         return sum;
     }
     
     // Function to remove owner from owners array
 
-    function removeOwner(address _owner) public onlyPlatform 
+    function removeOwner(address _owner) private
     {
         (bool isOwner, uint256 index) = isAddressOwner(_owner);
 
@@ -119,13 +118,13 @@ contract AssetToken {
 
     // Function to split ownership between owners
 
-    function transferOwnership(uint _transferPercentage, address _buyer, bool _isEffectiveTransfer) public onlyPlatformOrOwner 
+    function transferOwnership(uint _transferPercentage, address _buyer, bool _isEffectiveOwnerTransfer) public onlyPlatformOrOwner 
     {
 
         Owner storage payer = percentageOwners[msg.sender];
         require((payer.shares - getCollateralShares(msg.sender)) >= _transferPercentage);
 
-        if (_isEffectiveTransfer) {
+        if (_isEffectiveOwnerTransfer) {
             require(msg.sender == effectiveOwner);
             effectiveOwner = _buyer;
         }
@@ -137,6 +136,6 @@ contract AssetToken {
 
         if (!isBuyerOwner) owners.push(_buyer);
 
-        if (payer.shares == 0) removeOwner(msg.sender);             
+        if (payer.shares == 0) removeOwner(msg.sender);
     }
 }
