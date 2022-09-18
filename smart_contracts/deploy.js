@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires *
 /* COMPILE AND DEPLOY CONTRACT */
 const fs = require("fs");
 const path = require("path");
