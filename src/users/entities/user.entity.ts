@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { UserToTokenizedAsset } from "src/tokenized-asset/entities/user-to-tokenized-asset.entity";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity({ name: "User" })
 export class User {
@@ -14,4 +21,7 @@ export class User {
 
   @Column({ type: "varchar" })
   public password: string;
+
+  @OneToMany((type) => UserToTokenizedAsset, (uta) => uta.user)
+  public userToTokenizedAssets: UserToTokenizedAsset[];
 }
