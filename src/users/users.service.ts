@@ -1,42 +1,40 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { User } from "./entities/user.entity";
+import { Users } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    const createUser = this.userRepository.create(createUserDto);
-    return createUser.save();
+
+  async find(id: string) {
+    return await this.usersRepository.findOneBy({ id });
   }
 
-  findAll() {
-    return this.userRepository.find();
+  async findAll() {
+    return await this.usersRepository.find({
+      select: ['id', 'name', 'username'],
+    });
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOneBy({ id: id });
+  async store(data: CreateUserDto) {
+    const user = this.usersRepository.create(data);
+    return await this.usersRepository.save(user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    try {
-      await this.userRepository.update(id, updateUserDto);
-      return this.userRepository.findOneBy({ id: id });
-    } catch (exception) {
-      throw exception;
-    }
+  async update(id: string, data: UpdateUserDto) {
+    const user = await this.usersRepository.findOneBy({ id });
+    this.usersRepository.merge(user, data);
+    return await this.usersRepository.save(user);
   }
 
-  async remove(id: number) {
-    const user = await this.userRepository.findOneBy({ id: id });
-
-    if (!user) throw new Error("User not found.");
-
-    return user.remove();
+  async destroy(id: string) {
+    await this.usersRepository.findOneBy({ id });
+    this.usersRepository.softDelete({ id });
   }
 }

@@ -1,4 +1,4 @@
-import { User } from "src/users/entities/user.entity";
+import { Users } from "src/users/entities/user.entity";
 import {
   BaseEntity,
   Column,
@@ -43,8 +43,8 @@ export class UserToTokenizedAsset extends BaseEntity {
   @OneToMany((type) => RentPayment, (rp) => rp.userToTokenizedAsset)
   public rentPayments: RentPayment[];
 
-  @ManyToOne((type) => User, (user) => user.userToTokenizedAssets)
-  public user: User;
+  @ManyToOne((type) => Users, (user) => user.userToTokenizedAssets)
+  public user: Users;
 
   @ManyToOne((type) => TokenizedAsset, (ta) => ta.userToTokenizedAssets)
   public tokenizedAsset: TokenizedAsset;

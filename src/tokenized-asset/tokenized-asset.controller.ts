@@ -7,11 +7,13 @@ import {
   Patch,
   Post,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { CreateTokenizedAssetDto } from "./dto/create-tokenized-asset.dto";
 import { UpdateTokenizedAssetDto } from "./dto/update-tokenized-asset.dto";
 import { TokenizedAssetService } from "./tokenized-asset.service";
 
 @Controller("tokenized-asset")
+@ApiTags("Tokenized Assets")
 export class TokenizedAssetController {
   constructor(private readonly tokenizedAssetService: TokenizedAssetService) {}
 

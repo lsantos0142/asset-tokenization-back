@@ -39,8 +39,7 @@ class ConfigService {
       database: this.getValue("POSTGRES_DATABASE"),
       synchronize: true,
       entities: [
-        "dist/users/entities/*.entity{.ts,.js}",
-        "dist/tokenized-asset/entities/*.entity{.ts,.js}",
+        "dist/**/entities/*.entity{.ts,.js}",
       ],
       migrationsTableName: "migration",
       migrations: ["dist/src/migration/*.{.ts,.js}"],

@@ -10,19 +10,12 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-@Entity({ name: "User" })
-export class User extends BaseEntity {
+@Entity({ name: "Users" })
+export class Users extends BaseEntity {
   //#region baseEntity fields
-  @PrimaryGeneratedColumn()
-  @PrimaryColumn({ type: "bigint" })
-  public id: number;
-
-  @CreateDateColumn()
-  public createdAt: Date;
-
-  @UpdateDateColumn()
-  public updatedAt: Date;
-  //#endregion
+  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn({ type: "uuid" })
+  public id: string;
 
   @Column({ type: "varchar" })
   public name: string;
@@ -32,6 +25,9 @@ export class User extends BaseEntity {
 
   @Column({ type: "varchar" })
   public password: string;
+
+  @Column({ type: "varchar" })
+  public walletAddress: string;
 
   @OneToMany((type) => UserToTokenizedAsset, (uta) => uta.user)
   public userToTokenizedAssets: UserToTokenizedAsset[];
