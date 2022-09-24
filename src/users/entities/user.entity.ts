@@ -28,16 +28,19 @@ export class Users extends BaseEntity {
   @Column({ type: "varchar" })
   public password: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", nullable: true })
   public walletAddress: string;
 
-  @OneToMany((type) => UserToTokenizedAsset, (uta) => uta.user)
+  @OneToMany(() => UserToTokenizedAsset, (uta) => uta.user)
   public userToTokenizedAssets: UserToTokenizedAsset[];
 
   @BeforeInsert()
   hashPassword = () => {
     this.password = hashSync(this.password, 10);
   }
+
+  @Column({ type: "bool"})
+  isAdmin: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: string;
@@ -47,5 +50,8 @@ export class Users extends BaseEntity {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string;
+
+  @Column({ type: "varchar", nullable: true })
+  hashedRt: string;
 
 }

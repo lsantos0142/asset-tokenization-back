@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable, Logger } from "@nestjs/common";
 import { Users } from "src/users/entities/user.entity";
 import { UsersService } from "src/users/users.service";
-import { compareSync } from "bcrypt";
+import { compare, compareSync } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { LoginDto } from "./dto/login-dto";
 
 @Injectable()
 export class AuthService {
@@ -11,10 +13,67 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: Users) {
-    const payload = { sub: user.id, username: user.username };
+  async getTokens(id: string, username: string, isAdmin: boolean) {
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: id,
+          username,
+          isAdmin,
+        },
+        { secret: process.env.AT_JWT_SECRET_KEY, expiresIn: 60 * 30 },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: id,
+          username,
+          isAdmin,
+        },
+        { secret: process.env.RT_JWT_SECRET_KEY, expiresIn: 60 * 60 * 24 * 7 },
+      ),
+    ]);
 
-    return { token: this.jwtService.sign(payload) };
+    return {
+      accessToken: at,
+      refreshToken: rt,
+    };
+  }
+
+  async login(loginDto: LoginDto) {
+    const user = await this.userService.findByUsername(loginDto.username);
+
+    if (!user) throw new ForbiddenException("Acesso Negado");
+
+    const passwordMatches = await compare(loginDto.password, user.password);
+    if (!passwordMatches) throw new ForbiddenException("Acesso Negado");
+
+    const tokens = await this.getTokens(user.id, user.username, user.isAdmin);
+    await this.userService.updateRtHash(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  async signup(userDTO: CreateUserDto) {
+    const user = await this.userService.store(userDTO);
+
+    const tokens = await this.getTokens(user.id, user.username, user.isAdmin);
+    await this.userService.updateRtHash(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  async logout(id: string) {
+    await this.userService.updateRtHash(id, null);
+  }
+
+  async refresh(id: string, rt: string) {
+    const user = await this.userService.find(id);
+    if (!user) throw new ForbiddenException("Acesso Negado");
+
+    const rtMatches = await compare(rt.trim(), user.hashedRt);
+    if (!rtMatches) throw new ForbiddenException("Acesso Negado");
+
+    const tokens = await this.getTokens(user.id, user.username, user.isAdmin);
+    await this.userService.updateRtHash(user.id, tokens.refreshToken);
+    return tokens;
   }
 
   async validateUser(username: string, password: string) {

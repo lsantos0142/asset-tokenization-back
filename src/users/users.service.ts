@@ -12,8 +12,15 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
   ) {}
 
+  async updateRtHash(id: string, rt: string) {
+    const user = await this.findOneOrFail({ id });
+
+    this.usersRepository.merge(user, { hashedRt: rt });
+    await this.usersRepository.save(user);
+  }
+
   async findOneOrFail(condition: any) {
-    try{
+    try {
       return await this.usersRepository.findOneByOrFail(condition);
     } catch (e) {
       throw new NotFoundException(e.message);
@@ -21,14 +28,11 @@ export class UsersService {
   }
 
   async find(id: string) {
-    const user = await this.findOneOrFail({ id });
+    return await this.findOneOrFail({ id });
+  }
 
-    return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      walletAddress: user.walletAddress
-    };
+  async findByUsername(username: string) {
+    return await this.findOneOrFail({ username });
   }
 
   async findAll() {
@@ -38,13 +42,16 @@ export class UsersService {
   }
 
   async store(data: CreateUserDto) {
-    const user = this.usersRepository.create(data);
+
+    // TODO: tratar usernames iguais
+    const user = this.usersRepository.create({ ...data, isAdmin: false });
     await this.usersRepository.save(user);
     return {
       id: user.id,
       name: user.name,
       username: user.username,
-      walletAddress: user.walletAddress
+      walletAddress: user.walletAddress,
+      isAdmin: user.isAdmin,
     };
   }
 
@@ -57,7 +64,20 @@ export class UsersService {
       id: user.id,
       name: user.name,
       username: user.username,
-      walletAddress: user.walletAddress
+      walletAddress: user.walletAddress,
+    };
+  }
+
+  async updateWallet(id: string, walletAddress: string) {
+    const user = await this.findOneOrFail({ id });
+
+    this.usersRepository.merge(user, { walletAddress });
+    await this.usersRepository.save(user);
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      walletAddress: user.walletAddress,
     };
   }
 

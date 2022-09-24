@@ -8,9 +8,6 @@ export class CreateUserDto {
   
     @IsNotEmpty()
     username: string;
-
-    @IsNotEmpty()
-    walletAddress: string;
   
     @IsNotEmpty()
     @Matches(RegExHelper.password, { message: MessagesHelper.PASSWORD_VALID })

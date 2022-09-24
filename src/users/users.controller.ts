@@ -23,8 +23,8 @@ import { UsersService } from "./users.service";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth('JWT-auth')
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth("JWT-auth")
   @Get()
   async index() {
     return await this.usersService.findAll();
@@ -35,28 +35,38 @@ export class UsersController {
     return await this.usersService.store(body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth('JWT-auth')
-  @Get(':id')
-  async show(@Param('id', new ParseUUIDPipe()) id: string) {
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth("JWT-auth")
+  @Get(":id")
+  async show(@Param("id", new ParseUUIDPipe()) id: string) {
     return await this.usersService.find(id);
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth('JWT-auth')
-  @Put(':id')
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth("JWT-auth")
+  @Put(":id")
   async update(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param("id", new ParseUUIDPipe()) id: string,
     @Body() body: UpdateUserDto,
   ) {
     return await this.usersService.update(id, body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth('JWT-auth')
-  @Delete(':id')
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth("JWT-auth")
+  @Put(":id/:wallet")
+  async updateWallet(
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Param("wallet") walletAddress: string,
+  ) {
+    return await this.usersService.updateWallet(id, walletAddress);
+  }
+
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth("JWT-auth")
+  @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async destroy(@Param('id', new ParseUUIDPipe()) id: string) {
+  async destroy(@Param("id", new ParseUUIDPipe()) id: string) {
     await this.usersService.destroy(id);
   }
 }
