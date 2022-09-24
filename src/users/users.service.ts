@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -12,29 +12,57 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
   ) {}
 
+  async findOneOrFail(condition: any) {
+    try{
+      return await this.usersRepository.findOneByOrFail(condition);
+    } catch (e) {
+      throw new NotFoundException(e.message);
+    }
+  }
+
   async find(id: string) {
-    return await this.usersRepository.findOneBy({ id });
+    const user = await this.findOneOrFail({ id });
+
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      walletAddress: user.walletAddress
+    };
   }
 
   async findAll() {
     return await this.usersRepository.find({
-      select: ['id', 'name', 'username'],
+      select: ["id", "name", "username", "walletAddress"],
     });
   }
 
   async store(data: CreateUserDto) {
     const user = this.usersRepository.create(data);
-    return await this.usersRepository.save(user);
+    await this.usersRepository.save(user);
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      walletAddress: user.walletAddress
+    };
   }
 
   async update(id: string, data: UpdateUserDto) {
-    const user = await this.usersRepository.findOneBy({ id });
+    const user = await this.findOneOrFail({ id });
+
     this.usersRepository.merge(user, data);
-    return await this.usersRepository.save(user);
+    await this.usersRepository.save(user);
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      walletAddress: user.walletAddress
+    };
   }
 
   async destroy(id: string) {
-    await this.usersRepository.findOneBy({ id });
+    const user = await this.findOneOrFail({ id });
     this.usersRepository.softDelete({ id });
   }
 }
