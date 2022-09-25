@@ -1,4 +1,4 @@
-import { Users } from "src/users/entities/user.entity";
+import { User } from "src/users/entities/user.entity";
 import {
   BaseEntity,
   Column,
@@ -34,18 +34,15 @@ export class UserToTokenizedAsset extends BaseEntity {
   @Column({ type: "decimal" })
   public percentageOwned: number;
 
-  @OneToMany(
-    (type) => Collateral,
-    (collateral) => collateral.userToTokenizedAsset,
-  )
+  @OneToMany(() => Collateral, (collateral) => collateral.userToTokenizedAsset)
   public collaterals: Collateral[];
 
-  @OneToMany((type) => RentPayment, (rp) => rp.userToTokenizedAsset)
+  @OneToMany(() => RentPayment, (rp) => rp.userToTokenizedAsset)
   public rentPayments: RentPayment[];
 
-  @ManyToOne((type) => Users, (user) => user.userToTokenizedAssets)
-  public user: Users;
+  @ManyToOne(() => User, (user) => user.userToTokenizedAssets)
+  public user: User;
 
-  @ManyToOne((type) => TokenizedAsset, (ta) => ta.userToTokenizedAssets)
+  @ManyToOne(() => TokenizedAsset, (ta) => ta.userToTokenizedAssets)
   public tokenizedAsset: TokenizedAsset;
 }

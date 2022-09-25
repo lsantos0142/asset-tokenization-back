@@ -1,9 +1,20 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UsersService } from "src/users/users.service";
+import { Repository } from "typeorm";
 import { CreateTokenizedAssetDto } from "./dto/create-tokenized-asset.dto";
+import { CreateUserToTokenizedAssetDto } from "./dto/create-user-to-tokenized-asset.dto";
 import { UpdateTokenizedAssetDto } from "./dto/update-tokenized-asset.dto";
+import { UserToTokenizedAsset } from "./entities/user-to-tokenized-asset.entity";
 
 @Injectable()
 export class TokenizedAssetService {
+  constructor(
+    @InjectRepository(UserToTokenizedAsset)
+    private userToAssetRepository: Repository<UserToTokenizedAsset>,
+    private readonly usersService: UsersService,
+  ) {}
+
   create(createTokenizedAssetDto: CreateTokenizedAssetDto) {
     return "This action adds a new tokenizedAsset";
   }
@@ -22,5 +33,16 @@ export class TokenizedAssetService {
 
   remove(id: number) {
     return `This action removes a #${id} tokenizedAsset`;
+  }
+
+  async createUserToAsset(data: CreateUserToTokenizedAssetDto, userId: number) {
+    const userToAsset = this.userToAssetRepository.create(data);
+    const loggedUser = await this.usersService.find(userId.toString());
+
+    userToAsset.user = loggedUser;
+
+    const savedUserToAsset = await this.userToAssetRepository.save(userToAsset);
+
+    return savedUserToAsset;
   }
 }

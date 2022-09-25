@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TokenizedAssetController } from "./tokenized-asset.controller";
-import { TokenizedAssetService } from "./tokenized-asset.service";
+import TokenizedAssetService from "./tokenized-asset.service";
 
 describe("TokenizedAssetController", () => {
   let controller: TokenizedAssetController;

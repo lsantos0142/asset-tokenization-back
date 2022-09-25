@@ -27,12 +27,15 @@ export class TokenizedAsset extends BaseEntity {
   @Column({ type: "varchar" })
   public address: string;
 
+  @Column({ type: "varchar" })
+  public identification: string;
+
   @Column({ type: "decimal" })
   public usableArea: number;
 
   @Column({ type: "varchar" })
   public contractAddress: string;
 
-  @OneToMany((type) => UserToTokenizedAsset, (uta) => uta.tokenizedAsset)
+  @OneToMany(() => UserToTokenizedAsset, (uta) => uta.tokenizedAsset)
   public userToTokenizedAssets: UserToTokenizedAsset[];
 }

@@ -1,15 +1,15 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { Users } from "./entities/user.entity";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Users)
-    private readonly usersRepository: Repository<Users>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async updateRtHash(id: string, rt: string) {
@@ -42,7 +42,6 @@ export class UsersService {
   }
 
   async store(data: CreateUserDto) {
-
     // TODO: tratar usernames iguais
     const user = this.usersRepository.create({ ...data, isAdmin: false });
     await this.usersRepository.save(user);

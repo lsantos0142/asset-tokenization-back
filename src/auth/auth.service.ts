@@ -1,9 +1,9 @@
-import { ForbiddenException, Injectable, Logger } from "@nestjs/common";
-import { Users } from "src/users/entities/user.entity";
-import { UsersService } from "src/users/users.service";
-import { compare, compareSync } from "bcrypt";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { compare, compareSync } from "bcrypt";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { User } from "src/users/entities/user.entity";
+import { UsersService } from "src/users/users.service";
 import { LoginDto } from "./dto/login-dto";
 
 @Injectable()
@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string) {
-    let user: Users;
+    let user: User;
     try {
       user = await this.userService.findOneOrFail({ username });
     } catch (e) {

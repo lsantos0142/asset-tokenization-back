@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, Post, Query } from "@nestjs/common";
+import { Controller, Get, Post, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { SmartContractsService } from "./smart_contracts.service";
 
