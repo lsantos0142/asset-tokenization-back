@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
 import { SmartContractsService } from "./smart_contracts.service";
 
 @Controller("smart-contracts")
@@ -8,18 +9,8 @@ export class SmartContractsController {
   constructor(private readonly smartContractsService: SmartContractsService) {}
 
   @Post("create")
-  createTokenization(
-    @Query("effectiveOwner") effectiveOwner: string,
-    @Query("assetAddress") assetAddress: string,
-    @Query("assetUsableArea") assetUsableArea: number,
-    @Query("assetId") assetId: number,
-  ): Promise<string> {
-    return this.smartContractsService.createTokenization(
-      effectiveOwner,
-      assetAddress,
-      assetUsableArea,
-      assetId,
-    );
+  createTokenization(@Body() createTokenizationDto: CreateTokenizationDto) {
+    return this.smartContractsService.createTokenization(createTokenizationDto);
   }
 
   @Get("methods")

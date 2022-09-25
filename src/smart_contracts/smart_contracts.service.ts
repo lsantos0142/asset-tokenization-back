@@ -5,17 +5,16 @@ import { compile } from "solc";
 import { CreateUserToTokenizedAssetDto } from "src/tokenized-asset/dto/create-user-to-tokenized-asset.dto";
 import { TokenizedAssetService } from "src/tokenized-asset/tokenized-asset.service";
 import Web3 from "web3";
+import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
 
 @Injectable()
 export class SmartContractsService {
   constructor(private readonly tokenizedAssetService: TokenizedAssetService) {}
 
-  async createTokenization(
-    effectiveOwner: string,
-    assetAddress: string,
-    assetUsableArea: number,
-    assetId: number,
-  ): Promise<string> {
+  async createTokenization(createTokenizationDto: CreateTokenizationDto) {
+    const { assetAddress, assetId, assetUsableArea, effectiveOwner, userId } =
+      createTokenizationDto;
+
     const mnemonic = process.env.MNEMONIC;
     const providerOrUrl =
       "https://rinkeby.infura.io/v3/87902c981be0460c94930d13b31b7eb0";
@@ -43,7 +42,9 @@ export class SmartContractsService {
     const abi = contract.abi;
     const bytecode = contract.evm.bytecode.object;
     /* 4. Send Smart Contract To Blockchain */
-    const { _address }: any = await new web3.eth.Contract(abi)
+    const { _address }: any = "aaaaaaaaa";
+
+    await new web3.eth.Contract(abi)
       .deploy({
         data: bytecode,
         arguments: [effectiveOwner, assetAddress, assetUsableArea, assetId],
@@ -52,7 +53,7 @@ export class SmartContractsService {
     Logger.log("Contract Address => " + _address);
     Logger.log("Abi => " + JSON.stringify(abi));
 
-    const data: CreateUserToTokenizedAssetDto = {
+    const createUserToTokenizedAssetData: CreateUserToTokenizedAssetDto = {
       isEffectiveOwner: true,
       percentageOwned: 1,
       tokenizedAsset: {
@@ -64,8 +65,8 @@ export class SmartContractsService {
     };
 
     const savedUserToAsset = await this.tokenizedAssetService.createUserToAsset(
-      data,
-      1,
+      createUserToTokenizedAssetData,
+      userId,
     );
 
     return savedUserToAsset.tokenizedAsset.contractAddress;

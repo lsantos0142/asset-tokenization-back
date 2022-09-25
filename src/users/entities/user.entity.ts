@@ -28,7 +28,7 @@ export class User extends BaseEntity {
   @Column({ type: "varchar" })
   public password: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", nullable: true })
   public walletAddress: string;
 
   @OneToMany(() => UserToTokenizedAsset, (uta) => uta.user)

@@ -43,7 +43,10 @@ export class UsersService {
 
   async store(data: CreateUserDto) {
     // TODO: tratar usernames iguais
-    const user = this.usersRepository.create({ ...data, isAdmin: false });
+    const user = this.usersRepository.create({
+      ...data,
+      isAdmin: false,
+    });
     await this.usersRepository.save(user);
     return {
       id: user.id,

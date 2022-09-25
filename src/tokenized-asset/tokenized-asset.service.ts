@@ -35,9 +35,9 @@ export class TokenizedAssetService {
     return `This action removes a #${id} tokenizedAsset`;
   }
 
-  async createUserToAsset(data: CreateUserToTokenizedAssetDto, userId: number) {
+  async createUserToAsset(data: CreateUserToTokenizedAssetDto, userId: string) {
     const userToAsset = this.userToAssetRepository.create(data);
-    const loggedUser = await this.usersService.find(userId.toString());
+    const loggedUser = await this.usersService.find(userId);
 
     userToAsset.user = loggedUser;
 
