@@ -7,12 +7,12 @@ import { TokenizedAssetController } from "./tokenized-asset.controller";
 import { TokenizedAssetService } from "./tokenized-asset.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([TokenizedAsset, UserToTokenizedAsset]),
-    UsersModule,
-  ],
-  controllers: [TokenizedAssetController],
-  providers: [TokenizedAssetService],
-  exports: [TokenizedAssetService, TypeOrmModule],
+    imports: [
+        TypeOrmModule.forFeature([TokenizedAsset, UserToTokenizedAsset]),
+        UsersModule,
+    ],
+    controllers: [TokenizedAssetController],
+    providers: [TokenizedAssetService],
+    exports: [TokenizedAssetService, TypeOrmModule],
 })
 export class TokenizedAssetModule {}

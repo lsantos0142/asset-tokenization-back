@@ -10,13 +10,13 @@ import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    UsersModule,
-    PassportModule,
-    JwtModule.register({}),
-  ],
-  providers: [AuthService, LocalStrategy, AtStrategy, RtStrategy],
-  controllers: [AuthController],
+    imports: [
+        ConfigModule.forRoot(),
+        UsersModule,
+        PassportModule,
+        JwtModule.register({}),
+    ],
+    providers: [AuthService, LocalStrategy, AtStrategy, RtStrategy],
+    controllers: [AuthController],
 })
 export class AuthModule {}

@@ -4,8 +4,8 @@ import { SmartContractsController } from "./smart_contracts.controller";
 import { SmartContractsService } from "./smart_contracts.service";
 
 @Module({
-  controllers: [SmartContractsController],
-  providers: [SmartContractsService],
-  imports: [TokenizedAssetModule],
+    controllers: [SmartContractsController],
+    providers: [SmartContractsService],
+    imports: [TokenizedAssetModule],
 })
 export class SmartContractsModule {}

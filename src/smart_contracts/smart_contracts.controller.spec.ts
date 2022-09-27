@@ -3,18 +3,20 @@ import { SmartContractsController } from "./smart_contracts.controller";
 import { SmartContractsService } from "./smart_contracts.service";
 
 describe("SmartContractsController", () => {
-  let controller: SmartContractsController;
+    let controller: SmartContractsController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [SmartContractsController],
-      providers: [SmartContractsService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [SmartContractsController],
+            providers: [SmartContractsService],
+        }).compile();
 
-    controller = module.get<SmartContractsController>(SmartContractsController);
-  });
+        controller = module.get<SmartContractsController>(
+            SmartContractsController,
+        );
+    });
 
-  it("should be defined", () => {
-    expect(controller).toBeDefined();
-  });
+    it("should be defined", () => {
+        expect(controller).toBeDefined();
+    });
 });

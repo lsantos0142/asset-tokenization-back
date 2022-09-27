@@ -6,15 +6,19 @@ import { SmartContractsService } from "./smart_contracts.service";
 @Controller("smart-contracts")
 @ApiTags("Smart Contracts")
 export class SmartContractsController {
-  constructor(private readonly smartContractsService: SmartContractsService) {}
+    constructor(
+        private readonly smartContractsService: SmartContractsService,
+    ) {}
 
-  @Post("create")
-  createTokenization(@Body() createTokenizationDto: CreateTokenizationDto) {
-    return this.smartContractsService.createTokenization(createTokenizationDto);
-  }
+    @Post("create")
+    createTokenization(@Body() createTokenizationDto: CreateTokenizationDto) {
+        return this.smartContractsService.createTokenization(
+            createTokenizationDto,
+        );
+    }
 
-  @Get("methods")
-  testMethods() {
-    return this.smartContractsService.testMethods();
-  }
+    @Get("methods")
+    testMethods() {
+        return this.smartContractsService.testMethods();
+    }
 }

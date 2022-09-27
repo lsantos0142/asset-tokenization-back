@@ -9,14 +9,14 @@ import { TokenizedAssetModule } from "./tokenized-asset/tokenized-asset.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
-    SmartContractsModule,
-    UsersModule,
-    TokenizedAssetModule,
-    AuthModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
+        SmartContractsModule,
+        UsersModule,
+        TokenizedAssetModule,
+        AuthModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}

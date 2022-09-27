@@ -7,84 +7,84 @@ import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
+    ) {}
 
-  async updateRtHash(id: string, rt: string) {
-    const user = await this.findOneOrFail({ id });
+    async updateRtHash(id: string, rt: string) {
+        const user = await this.findOneOrFail({ id });
 
-    this.usersRepository.merge(user, { hashedRt: rt });
-    await this.usersRepository.save(user);
-  }
-
-  async findOneOrFail(condition: any) {
-    try {
-      return await this.usersRepository.findOneByOrFail(condition);
-    } catch (e) {
-      throw new NotFoundException(e.message);
+        this.usersRepository.merge(user, { hashedRt: rt });
+        await this.usersRepository.save(user);
     }
-  }
 
-  async find(id: string) {
-    return await this.findOneOrFail({ id });
-  }
+    async findOneOrFail(condition: any) {
+        try {
+            return await this.usersRepository.findOneByOrFail(condition);
+        } catch (e) {
+            throw new NotFoundException(e.message);
+        }
+    }
 
-  async findByUsername(username: string) {
-    return await this.findOneOrFail({ username });
-  }
+    async find(id: string) {
+        return await this.findOneOrFail({ id });
+    }
 
-  async findAll() {
-    return await this.usersRepository.find({
-      select: ["id", "name", "username", "walletAddress"],
-    });
-  }
+    async findByUsername(username: string) {
+        return await this.findOneOrFail({ username });
+    }
 
-  async store(data: CreateUserDto) {
-    // TODO: tratar usernames iguais
-    const user = this.usersRepository.create({
-      ...data,
-      isAdmin: false,
-    });
-    await this.usersRepository.save(user);
-    return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      walletAddress: user.walletAddress,
-      isAdmin: user.isAdmin,
-    };
-  }
+    async findAll() {
+        return await this.usersRepository.find({
+            select: ["id", "name", "username", "walletAddress"],
+        });
+    }
 
-  async update(id: string, data: UpdateUserDto) {
-    const user = await this.findOneOrFail({ id });
+    async store(data: CreateUserDto) {
+        // TODO: tratar usernames iguais
+        const user = this.usersRepository.create({
+            ...data,
+            isAdmin: false,
+        });
+        await this.usersRepository.save(user);
+        return {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            walletAddress: user.walletAddress,
+            isAdmin: user.isAdmin,
+        };
+    }
 
-    this.usersRepository.merge(user, data);
-    await this.usersRepository.save(user);
-    return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      walletAddress: user.walletAddress,
-    };
-  }
+    async update(id: string, data: UpdateUserDto) {
+        const user = await this.findOneOrFail({ id });
 
-  async updateWallet(id: string, walletAddress: string) {
-    const user = await this.findOneOrFail({ id });
+        this.usersRepository.merge(user, data);
+        await this.usersRepository.save(user);
+        return {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            walletAddress: user.walletAddress,
+        };
+    }
 
-    this.usersRepository.merge(user, { walletAddress });
-    await this.usersRepository.save(user);
-    return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      walletAddress: user.walletAddress,
-    };
-  }
+    async updateWallet(id: string, walletAddress: string) {
+        const user = await this.findOneOrFail({ id });
 
-  async destroy(id: string) {
-    const user = await this.findOneOrFail({ id });
-    this.usersRepository.softDelete({ id });
-  }
+        this.usersRepository.merge(user, { walletAddress });
+        await this.usersRepository.save(user);
+        return {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            walletAddress: user.walletAddress,
+        };
+    }
+
+    async destroy(id: string) {
+        const user = await this.findOneOrFail({ id });
+        this.usersRepository.softDelete({ id });
+    }
 }
