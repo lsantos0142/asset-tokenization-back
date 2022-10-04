@@ -1,6 +1,7 @@
 export class CreateTokenizedAssetDto {
-    identification: string;
+    registration: string;
     address: string;
     usableArea: number;
     contractAddress: string;
+    deed: string;
 }

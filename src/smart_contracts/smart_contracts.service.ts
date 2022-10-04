@@ -16,7 +16,7 @@ export class SmartContractsService {
     async createTokenization(createTokenizationDto: CreateTokenizationDto) {
         const {
             assetAddress,
-            assetId,
+            registration,
             assetUsableArea,
             effectiveOwner,
             userId,
@@ -59,7 +59,7 @@ export class SmartContractsService {
                     effectiveOwner,
                     assetAddress,
                     assetUsableArea,
-                    assetId,
+                    registration,
                 ],
             })
             .send({ from: account, gas: 10000000 });
@@ -71,9 +71,10 @@ export class SmartContractsService {
             percentageOwned: 1,
             tokenizedAsset: {
                 usableArea: assetUsableArea,
-                identification: assetId.toString(),
+                registration: registration,
                 contractAddress: _address,
                 address: assetAddress,
+                deed: "base64",
             },
         };
 

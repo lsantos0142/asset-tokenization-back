@@ -8,7 +8,7 @@ export class CreateTokenizationDto {
     @IsNotEmpty()
     assetUsableArea: number;
     @IsNotEmpty()
-    assetId: number;
+    registration: string;
     @IsNotEmpty()
     userId: string;
 }
