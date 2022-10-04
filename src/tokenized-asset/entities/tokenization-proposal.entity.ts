@@ -3,18 +3,21 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
-    OneToMany,
     OneToOne,
     PrimaryColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { Ownership } from "./ownership.entity";
-import { TokenizationProposal } from "./tokenization-proposal.entity";
+import { TokenizedAsset } from "./tokenized-asset.entity";
 
-@Entity({ name: "TokenizedAsset" })
-export class TokenizedAsset extends BaseEntity {
+export enum ProposalStatus {
+    PENDING,
+    APPROVED,
+    REFUSED,
+}
+
+@Entity({ name: "TokenizationProposal" })
+export class TokenizationProposal extends BaseEntity {
     //#region baseEntity fields
     @PrimaryGeneratedColumn()
     @PrimaryColumn({ type: "bigint" })
@@ -39,13 +42,13 @@ export class TokenizedAsset extends BaseEntity {
     @Column({ type: "decimal" })
     public usableArea: number;
 
-    @Column({ type: "varchar" })
-    public contractAddress: string;
+    @Column({
+        type: "enum",
+        enum: ProposalStatus,
+        default: ProposalStatus.PENDING,
+    })
+    public status: string;
 
-    @OneToMany(() => Ownership, (o) => o.tokenizedAsset)
-    public ownerships: Ownership[];
-
-    @OneToOne(() => TokenizationProposal)
-    @JoinColumn()
-    public tokenizationProposal: TokenizationProposal;
+    @OneToOne(() => TokenizedAsset)
+    public tokenizedAsset: TokenizedAsset;
 }

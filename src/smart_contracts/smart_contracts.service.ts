@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import { readFileSync } from "fs";
 import { compile } from "solc";
-import { CreateUserToTokenizedAssetDto } from "src/tokenized-asset/dto/create-user-to-tokenized-asset.dto";
+import { CreateOwnershipDto } from "src/tokenized-asset/dto/create-ownership.dto";
 import { TokenizedAssetService } from "src/tokenized-asset/tokenized-asset.service";
 import Web3 from "web3";
 import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
@@ -66,7 +66,7 @@ export class SmartContractsService {
         Logger.log("Contract Address => " + _address);
         Logger.log("Abi => " + JSON.stringify(abi));
 
-        const createUserToTokenizedAssetData: CreateUserToTokenizedAssetDto = {
+        const createOwnershipData: CreateOwnershipDto = {
             isEffectiveOwner: true,
             percentageOwned: 1,
             tokenizedAsset: {
@@ -79,7 +79,7 @@ export class SmartContractsService {
 
         const savedUserToAsset =
             await this.tokenizedAssetService.createUserToAsset(
-                createUserToTokenizedAssetData,
+                createOwnershipData,
                 userId,
             );
 

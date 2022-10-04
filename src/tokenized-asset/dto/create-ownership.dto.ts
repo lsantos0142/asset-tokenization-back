@@ -1,6 +1,6 @@
 import { CreateTokenizedAssetDto } from "./create-tokenized-asset.dto";
 
-export class CreateUserToTokenizedAssetDto {
+export class CreateOwnershipDto {
     isEffectiveOwner: boolean;
     percentageOwned: number;
     tokenizedAsset: CreateTokenizedAssetDto;

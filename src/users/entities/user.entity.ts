@@ -1,5 +1,5 @@
 import { hashSync } from "bcrypt";
-import { UserToTokenizedAsset } from "src/tokenized-asset/entities/user-to-tokenized-asset.entity";
+import { Ownership } from "src/tokenized-asset/entities/ownership.entity";
 import {
     BaseEntity,
     BeforeInsert,
@@ -31,8 +31,8 @@ export class User extends BaseEntity {
     @Column({ type: "varchar", nullable: true })
     public walletAddress: string;
 
-    @OneToMany(() => UserToTokenizedAsset, (uta) => uta.user)
-    public userToTokenizedAssets: UserToTokenizedAsset[];
+    @OneToMany(() => Ownership, (uta) => uta.user)
+    public ownerships: Ownership[];
 
     @BeforeInsert()
     hashPassword = () => {

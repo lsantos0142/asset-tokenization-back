@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { UserToTokenizedAsset } from "./user-to-tokenized-asset.entity";
+import { Ownership } from "./ownership.entity";
 
 @Entity({ name: "Collateral" })
 export class Collateral extends BaseEntity {
@@ -33,6 +33,6 @@ export class Collateral extends BaseEntity {
     @Column({ type: "date" })
     public expirationDate: Date;
 
-    @ManyToOne((type) => UserToTokenizedAsset, (uta) => uta.collaterals)
-    public userToTokenizedAsset: UserToTokenizedAsset;
+    @ManyToOne((type) => Ownership, (uta) => uta.collaterals)
+    public ownership: Ownership;
 }

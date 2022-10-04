@@ -10,8 +10,14 @@ import {
 } from "typeorm";
 import { Ownership } from "./ownership.entity";
 
-@Entity({ name: "RentPayment" })
-export class RentPayment extends BaseEntity {
+export enum OfferStatus {
+    AVAILABLE,
+    ACCEPTED,
+    CANCELED,
+}
+
+@Entity({ name: "Offer" })
+export class Offer extends BaseEntity {
     //#region baseEntity fields
     @PrimaryGeneratedColumn()
     @PrimaryColumn({ type: "bigint" })
@@ -24,15 +30,15 @@ export class RentPayment extends BaseEntity {
     public updatedAt: Date;
     //#endregion
 
-    @Column({ type: "date" })
-    public paymentDate: Date;
-
     @Column({ type: "decimal" })
     public percentage: number;
 
     @Column({ type: "decimal" })
     public amount: number;
 
-    @ManyToOne((type) => Ownership, (uta) => uta.rentPayments)
-    public ownerships: Ownership;
+    @Column({ type: "enum", enum: OfferStatus, default: OfferStatus.AVAILABLE })
+    public status: string;
+
+    @ManyToOne((type) => Ownership, (uta) => uta.offers)
+    public ownership: Ownership;
 }
