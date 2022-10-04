@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { hashSync } from "bcrypt";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -15,7 +16,7 @@ export class UsersService {
     async updateRtHash(id: string, rt: string) {
         const user = await this.findOneOrFail({ id });
 
-        this.usersRepository.merge(user, { hashedRt: rt });
+        this.usersRepository.merge(user, { hashedRt: hashSync(rt, 10) });
         await this.usersRepository.save(user);
     }
 
