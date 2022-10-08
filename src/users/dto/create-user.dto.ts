@@ -3,13 +3,13 @@ import { MessagesHelper } from "src/helpers/messages.helper";
 import { RegExHelper } from "src/helpers/regex.helper";
 
 export class CreateUserDto {
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "O campo de nome é obrigatório" })
     name: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "O campo de usuário é obrigatório" })
     username: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "A senha é obrigatória" })
     @Matches(RegExHelper.password, { message: MessagesHelper.PASSWORD_VALID })
     password: string;
 }

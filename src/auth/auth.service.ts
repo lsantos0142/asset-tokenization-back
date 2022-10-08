@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { compare, compareSync } from "bcrypt";
 import { CreateUserDto } from "src/users/dto/create-user.dto";
@@ -59,16 +59,23 @@ export class AuthService {
         return tokens;
     }
 
-    async signup(userDTO: CreateUserDto) {
-        const user = await this.userService.store(userDTO);
+    async signup(res: any, userDTO: CreateUserDto) {
+        try {
+            await this.userService.findByUsername(userDTO.username);
+            return res.status(HttpStatus.CONFLICT).json({
+                message: "Usuário já existe",
+            });
+        } catch (e) {
+            const user = await this.userService.store(userDTO);
 
-        const tokens = await this.getTokens(
-            user.id,
-            user.username,
-            user.isAdmin,
-        );
-        await this.userService.updateRtHash(user.id, tokens.refreshToken);
-        return tokens;
+            const tokens = await this.getTokens(
+                user.id,
+                user.username,
+                user.isAdmin,
+            );
+            await this.userService.updateRtHash(user.id, tokens.refreshToken);
+            return res.status(HttpStatus.OK).json(tokens);
+        }
     }
 
     async logout(id: string) {

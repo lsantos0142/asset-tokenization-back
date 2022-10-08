@@ -22,7 +22,7 @@ export class User extends BaseEntity {
     @Column({ type: "varchar" })
     public name: string;
 
-    @Column({ type: "varchar" })
+    @Column({ type: "varchar", unique: true })
     public username: string;
 
     @Column({ type: "varchar" })

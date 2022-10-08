@@ -16,7 +16,9 @@ export class UsersService {
     async updateRtHash(id: string, rt: string) {
         const user = await this.findOneOrFail({ id });
 
-        this.usersRepository.merge(user, { hashedRt: hashSync(rt, 10) });
+        const hashedRt = rt ? hashSync(rt, 10) : null;
+
+        this.usersRepository.merge(user, { hashedRt });
         await this.usersRepository.save(user);
     }
 
@@ -43,7 +45,6 @@ export class UsersService {
     }
 
     async store(data: CreateUserDto) {
-        // TODO: tratar usernames iguais
         const user = this.usersRepository.create({
             ...data,
             isAdmin: false,

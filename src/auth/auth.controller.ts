@@ -5,6 +5,7 @@ import {
     HttpStatus,
     Post,
     Req,
+    Res,
     UseGuards,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
@@ -28,8 +29,8 @@ export class AuthController {
     // @UseGuards(AuthGuard("local"))
     @Post("signup")
     @HttpCode(HttpStatus.CREATED)
-    async signup(@Body() user: CreateUserDto) {
-        return this.authService.signup(user);
+    async signup(@Res() res: any, @Body() user: CreateUserDto) {
+        return this.authService.signup(res, user);
     }
 
     @UseGuards(AuthGuard("jwt"))
