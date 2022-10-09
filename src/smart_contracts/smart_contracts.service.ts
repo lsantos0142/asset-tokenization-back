@@ -3,7 +3,6 @@ import HDWalletProvider from "@truffle/hdwallet-provider";
 import { readFileSync } from "fs";
 import { contractAbi } from "smart_contracts/contract-abi";
 import { compile } from "solc";
-import { TokenizedAssetService } from "src/tokenized-asset/tokenized-asset.service";
 import Web3 from "web3";
 import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
 import { TransferOwnershipDto } from "./dto/transfer-ownership.dto";
@@ -14,7 +13,7 @@ export class SmartContractsService {
     public readonly provider: HDWalletProvider;
     public readonly web3: Web3;
 
-    constructor(private readonly tokenizedAssetService: TokenizedAssetService) {
+    constructor() {
         this.mnemonic = process.env.MNEMONIC;
         this.providerOrUrl =
             "https://goerli.infura.io/v3/87902c981be0460c94930d13b31b7eb0";
