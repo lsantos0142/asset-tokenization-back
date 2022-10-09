@@ -1,8 +1,10 @@
+import { User } from "src/users/entities/user.entity";
 import {
     BaseEntity,
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     OneToOne,
     PrimaryColumn,
     PrimaryGeneratedColumn,
@@ -51,4 +53,7 @@ export class TokenizationProposal extends BaseEntity {
 
     @OneToOne(() => TokenizedAsset)
     public tokenizedAsset: TokenizedAsset;
+
+    @ManyToOne(() => User, (user) => user.ownerships)
+    public user: User;
 }

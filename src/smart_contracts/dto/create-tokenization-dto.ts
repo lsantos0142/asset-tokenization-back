@@ -1,14 +1,7 @@
 import { IsNotEmpty } from "class-validator";
+import { TokenizationProposal } from "src/tokenized-asset/entities/tokenization-proposal.entity";
 
 export class CreateTokenizationDto {
     @IsNotEmpty()
-    effectiveOwner: string;
-    @IsNotEmpty()
-    assetAddress: string;
-    @IsNotEmpty()
-    assetUsableArea: number;
-    @IsNotEmpty()
-    registration: string;
-    @IsNotEmpty()
-    userId: string;
+    proposal: TokenizationProposal;
 }

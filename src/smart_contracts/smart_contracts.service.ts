@@ -1,30 +1,20 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import { readFileSync } from "fs";
 import { compile } from "solc";
-import { CreateOwnershipDto } from "src/tokenized-asset/dto/create-ownership.dto";
 import { TokenizedAssetService } from "src/tokenized-asset/tokenized-asset.service";
 import Web3 from "web3";
 import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
 
-@Injectable()
 export class SmartContractsService {
     constructor(
         private readonly tokenizedAssetService: TokenizedAssetService,
     ) {}
 
-    async createTokenization(createTokenizationDto: CreateTokenizationDto) {
-        const {
-            assetAddress,
-            registration,
-            assetUsableArea,
-            effectiveOwner,
-            userId,
-        } = createTokenizationDto;
-
+    async createTokenization({ proposal }: CreateTokenizationDto) {
         const mnemonic = process.env.MNEMONIC;
         const providerOrUrl =
-            "https://rinkeby.infura.io/v3/87902c981be0460c94930d13b31b7eb0";
+            "https://goerli.infura.io/v3/87902c981be0460c94930d13b31b7eb0";
         const provider = new HDWalletProvider({ mnemonic, providerOrUrl });
         const web3 = new Web3(provider);
 
@@ -56,35 +46,17 @@ export class SmartContractsService {
             .deploy({
                 data: bytecode,
                 arguments: [
-                    effectiveOwner,
-                    assetAddress,
-                    assetUsableArea,
-                    registration,
+                    proposal.user.walletAddress,
+                    proposal.address,
+                    proposal.usableArea,
+                    proposal.registration,
                 ],
             })
             .send({ from: account, gas: 10000000 });
         Logger.log("Contract Address => " + _address);
         Logger.log("Abi => " + JSON.stringify(abi));
 
-        const createOwnershipData: CreateOwnershipDto = {
-            isEffectiveOwner: true,
-            percentageOwned: 1,
-            tokenizedAsset: {
-                usableArea: assetUsableArea,
-                registration: registration,
-                contractAddress: _address,
-                address: assetAddress,
-                deed: "base64",
-            },
-        };
-
-        const savedUserToAsset =
-            await this.tokenizedAssetService.createUserToAsset(
-                createOwnershipData,
-                userId,
-            );
-
-        return savedUserToAsset.tokenizedAsset.contractAddress;
+        return _address;
     }
 
     async testMethods() {
