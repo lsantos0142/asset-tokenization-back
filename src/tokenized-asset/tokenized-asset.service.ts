@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { CreateOwnershipDto } from "./dto/create-ownership.dto";
 import { CreateTokenizationProposalDto } from "./dto/create-tokenization-proposal.dto";
 import { UpsertOwnershipDto } from "./dto/upsert-ownership.dto";
@@ -58,6 +58,18 @@ export class TokenizedAssetService {
     }
 
     async createTokenizationProposal(data: CreateTokenizationProposalDto) {
+        const existingProposal = await this.proposalRepository.findOne({
+            where: {
+                registration: data.registration,
+                status: Not(ProposalStatus.REFUSED.toString()),
+            },
+        });
+
+        if (!!existingProposal)
+            throw new ForbiddenException(
+                "Asset with given registration already on platform",
+            );
+
         const user = await this.usersService.findOneOrFail({ id: data.userId });
         if (!user.walletAddress)
             throw new ForbiddenException("User doesn't have wallet");
