@@ -30,6 +30,14 @@ export class UsersService {
         }
     }
 
+    async findUserByQuery(condition: any) {
+        try {
+            return await this.usersRepository.findOneOrFail(condition);
+        } catch (e) {
+            throw new NotFoundException(e.message);
+        }
+    }
+
     async find(id: string) {
         return await this.findOneOrFail({ id });
     }

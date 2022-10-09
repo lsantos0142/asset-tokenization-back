@@ -5,8 +5,12 @@ import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { CreateOwnershipDto } from "./dto/create-ownership.dto";
 import { CreateTokenizationProposalDto } from "./dto/create-tokenization-proposal.dto";
+import { UpsertOwnershipDto } from "./dto/upsert-ownership.dto";
 import { Ownership } from "./entities/ownership.entity";
-import { TokenizationProposal } from "./entities/tokenization-proposal.entity";
+import {
+    ProposalStatus,
+    TokenizationProposal,
+} from "./entities/tokenization-proposal.entity";
 import { TokenizedAsset } from "./entities/tokenized-asset.entity";
 
 @Injectable()
@@ -22,18 +26,7 @@ export class TokenizedAssetService {
         private readonly smartContractsService: SmartContractsService,
     ) {}
 
-    async createTokenizationProposal(data: CreateTokenizationProposalDto) {
-        const user = await this.usersService.findOneOrFail({ id: data.userId });
-        if (!user.walletAddress)
-            throw new ForbiddenException("User doesn't have wallet");
-
-        const proposal = this.proposalRepository.create(data);
-        proposal.user = user;
-
-        return await this.proposalRepository.save(proposal);
-    }
-
-    async createOwnership(data: CreateOwnershipDto) {
+    async createFirstOwnership(data: CreateOwnershipDto) {
         const ownership = this.ownershipRepository.create(data);
         const tokenizedAsset = this.tokenizedAssetRepository.create(
             data.tokenizedAsset,
@@ -48,9 +41,31 @@ export class TokenizedAssetService {
         ownership.tokenizedAsset = tokenizedAsset;
 
         await this.tokenizedAssetRepository.save(tokenizedAsset);
-        const savedUserToAsset = await this.ownershipRepository.save(ownership);
+        const savedOwnership = await this.ownershipRepository.save(ownership);
 
-        return savedUserToAsset;
+        return savedOwnership;
+    }
+
+    async getOwnershipsByUser(userId: string) {
+        const ownerships = this.ownershipRepository
+            .createQueryBuilder("ownership")
+            .innerJoinAndSelect("ownership.tokenizedAsset", "tokenizedAsset")
+            .innerJoinAndSelect("ownership.user", "user")
+            .where("user.id = :id", { id: userId })
+            .getMany();
+
+        return ownerships;
+    }
+
+    async createTokenizationProposal(data: CreateTokenizationProposalDto) {
+        const user = await this.usersService.findOneOrFail({ id: data.userId });
+        if (!user.walletAddress)
+            throw new ForbiddenException("User doesn't have wallet");
+
+        const proposal = this.proposalRepository.create(data);
+        proposal.user = user;
+
+        return await this.proposalRepository.save(proposal);
     }
 
     async getAllPendingProposal() {
@@ -64,7 +79,7 @@ export class TokenizedAssetService {
             id,
         });
 
-        proposal.status = "2";
+        proposal.status = ProposalStatus.REFUSED.toString();
         await this.proposalRepository.save(proposal);
         return proposal;
     }
@@ -77,7 +92,12 @@ export class TokenizedAssetService {
             relations: ["user"],
         });
 
-        proposal.status = "1";
+        if (proposal.status.toString() !== ProposalStatus.PENDING.toString())
+            throw new ForbiddenException("Proposal must be PENDING");
+
+        proposal.status = ProposalStatus.APPROVED.toString();
+        await this.proposalRepository.save(proposal);
+
         const contractAdress =
             await this.smartContractsService.createTokenization({
                 proposal,
@@ -96,6 +116,75 @@ export class TokenizedAssetService {
             tokenizationProposal: proposal,
         };
 
-        return await this.createOwnership(createOwnershipData);
+        return await this.createFirstOwnership(createOwnershipData);
+    }
+
+    async upsertOwnershipFromTransfer({
+        buyerUserId,
+        contractAddress,
+        isEffectiveOwnerTransfer,
+        sellerUserId,
+        transferShares,
+    }: UpsertOwnershipDto) {
+        const seller = await this.usersService.findUserByQuery({
+            where: {
+                id: sellerUserId,
+            },
+            relations: ["ownerships", "ownerships.tokenizedAsset"],
+        });
+
+        const sellerOwnership = seller.ownerships.find(
+            (o) => o.tokenizedAsset.contractAddress === contractAddress,
+        );
+
+        if (!sellerOwnership)
+            throw new ForbiddenException("Seller isn't owner of asset");
+
+        if (isEffectiveOwnerTransfer && !sellerOwnership.isEffectiveOwner)
+            throw new ForbiddenException("Seller isn't effective owner");
+
+        if (sellerOwnership.percentageOwned < transferShares)
+            throw new ForbiddenException("Insuficient seller shares");
+
+        const buyer = await this.usersService.findUserByQuery({
+            where: {
+                id: buyerUserId,
+            },
+            relations: ["ownerships", "ownerships.tokenizedAsset"],
+        });
+
+        let buyerOwnership = buyer.ownerships.find(
+            (o) => o.tokenizedAsset.contractAddress === contractAddress,
+        );
+
+        await this.smartContractsService.transferOwnership({
+            buyer: buyer.walletAddress,
+            seller: seller.walletAddress,
+            contractAddress: contractAddress,
+            isEffectiveOwnerTransfer: isEffectiveOwnerTransfer,
+            transferShares: Math.round(transferShares * 1000),
+        });
+
+        if (!!buyerOwnership) {
+            buyerOwnership.percentageOwned =
+                Number(buyerOwnership.percentageOwned) + Number(transferShares);
+            buyerOwnership.isEffectiveOwner = isEffectiveOwnerTransfer;
+        } else {
+            buyerOwnership = this.ownershipRepository.create({
+                isEffectiveOwner: isEffectiveOwnerTransfer,
+                percentageOwned: transferShares,
+            });
+
+            buyerOwnership.user = buyer;
+            buyerOwnership.tokenizedAsset = sellerOwnership.tokenizedAsset;
+        }
+
+        sellerOwnership.isEffectiveOwner = !isEffectiveOwnerTransfer;
+        sellerOwnership.percentageOwned -= transferShares;
+
+        await this.ownershipRepository.save(buyerOwnership);
+        await this.ownershipRepository.save(sellerOwnership);
+
+        return buyerOwnership;
     }
 }
