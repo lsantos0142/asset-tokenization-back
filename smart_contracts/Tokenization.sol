@@ -44,17 +44,6 @@ contract AssetToken {
 	    _;
     }
 
-    modifier onlyEffectiveOwner {
-	    require(msg.sender == effectiveOwner);
-	    _;
-	}
-
-    modifier onlyOwner {
-        (bool isOwner, ) = isAddressOwner(msg.sender);
-	    require(isOwner);
-	    _;
-	}
-
     modifier onlyPlatformOrEffectiveOwner {
         require(msg.sender == creator || msg.sender == effectiveOwner);
 	    _;
@@ -129,33 +118,33 @@ contract AssetToken {
 
     // Function to split ownership between owners
 
-    function transferOwnership(uint _transferShares, address _buyer, bool _isEffectiveOwnerTransfer) public onlyPlatformOrOwner {
+    function transferOwnership(uint _transferShares, address _seller, address _buyer, bool _isEffectiveOwnerTransfer) public onlyPlatformOrOwner {
 
-        Owner storage payer = percentageOwners[msg.sender];
-        require((payer.shares - getCollateralShares(msg.sender)) >= _transferShares);
+        Owner storage seller = percentageOwners[_seller];
+        require((seller.shares - getCollateralShares(_seller)) >= _transferShares);
 
         if (_isEffectiveOwnerTransfer) {
-            require(msg.sender == effectiveOwner);
+            require(_seller == effectiveOwner);
             effectiveOwner = _buyer;
             emit showEffectiveOwner(effectiveOwner);
         }
 
-        payer.shares -= _transferShares;
+        seller.shares -= _transferShares;
         percentageOwners[_buyer].shares += _transferShares;
 
         (bool isBuyerOwner,) =  isAddressOwner(_buyer);
 
         if (!isBuyerOwner) owners.push(_buyer);
 
-        if (payer.shares == 0) removeOwner(msg.sender);
+        if (seller.shares == 0) removeOwner(_seller);
     }
 
     // Function to create collateral from sender token balance to bank address
     
-    function createCollateral(address _bankId, uint _collateralShares, uint _expirationDate) public onlyPlatformOrOwner {
+    function createCollateral(address _bankId, address _seller, uint _collateralShares, uint _expirationDate) public onlyPlatformOrOwner {
 
-        Owner storage owner = percentageOwners[msg.sender];
-        require((owner.shares - getCollateralShares(msg.sender)) >= _collateralShares);
+        Owner storage owner = percentageOwners[_seller];
+        require((owner.shares - getCollateralShares(_seller)) >= _collateralShares);
 
         owner.collaterals.push(Collateral({
             bankId: _bankId,
@@ -168,12 +157,15 @@ contract AssetToken {
 
     // Function to delete collateral associated with bank address of msg.sender from owner
 
-    function deleteCollateral(address _ownerAddress, uint _collateralShares, uint _expirationDate) public {
+    function deleteCollateral(address _ownerAddress, address _bankAddress, uint _collateralShares, uint _expirationDate) public {
 
         Collateral[] storage collaterals =  percentageOwners[_ownerAddress].collaterals;
 
         for(uint256 i = 0; i < collaterals.length; i++) {
-            if(collaterals[i].bankId == msg.sender && collaterals[i].collateralShares == _collateralShares && collaterals[i].expirationDate == _expirationDate){
+            if(collaterals[i].bankId == _bankAddress && 
+               collaterals[i].collateralShares == _collateralShares && 
+               collaterals[i].expirationDate == _expirationDate)
+            {
                 collaterals[i] = collaterals[collaterals.length -1];
                 collaterals.pop();
                 break;
