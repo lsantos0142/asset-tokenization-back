@@ -67,7 +67,7 @@ export class TokenizedAssetService {
 
         if (!!existingProposal)
             throw new ForbiddenException(
-                "Asset with given registration already on platform",
+                "Proposal with given registration already active on platform",
             );
 
         const user = await this.usersService.findOneOrFail({ id: data.userId });
