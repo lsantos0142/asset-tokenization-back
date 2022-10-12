@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { ForbiddenException, Logger } from "@nestjs/common";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import { readFileSync } from "fs";
 import { contractAbi } from "smart_contracts/contract-abi";
@@ -6,6 +6,7 @@ import { compile } from "solc";
 import Web3 from "web3";
 import { CreateCollateralDto } from "./dto/create-collateral.dto";
 import { CreateTokenizationDto } from "./dto/create-tokenization.dto";
+import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
 import { TransferOwnershipDto } from "./dto/transfer-ownership.dto";
 
 export class SmartContractsService {
@@ -51,21 +52,25 @@ export class SmartContractsService {
         const abi = contract.abi;
         const bytecode = contract.evm.bytecode.object;
         /* 4. Send Smart Contract To Blockchain */
-        const { _address }: any = await new this.web3.eth.Contract(abi)
-            .deploy({
-                data: bytecode,
-                arguments: [
-                    proposal.user.walletAddress,
-                    proposal.address,
-                    proposal.usableArea,
-                    proposal.registration,
-                ],
-            })
-            .send({ from: account, gas: Number(process.env.GAS_VALUE) });
-        Logger.log("Contract Address => " + _address);
-        Logger.log("Abi => " + JSON.stringify(abi));
 
-        return _address;
+        try {
+            const { _address }: any = await new this.web3.eth.Contract(abi)
+                .deploy({
+                    data: bytecode,
+                    arguments: [
+                        proposal.user.walletAddress,
+                        proposal.address,
+                        proposal.usableArea,
+                        proposal.registration,
+                    ],
+                })
+                .send({ from: account, gas: Number(process.env.GAS_VALUE) });
+            Logger.log("Contract Address => " + _address);
+            Logger.log("Abi => " + JSON.stringify(abi));
+            return _address;
+        } catch (exception) {
+            throw new ForbiddenException(exception.message);
+        }
     }
 
     async testMethods() {
@@ -113,7 +118,7 @@ export class SmartContractsService {
                 ),
             );
         } catch (exception) {
-            throw exception;
+            throw new ForbiddenException(exception.message);
         }
     }
 
@@ -146,7 +151,40 @@ export class SmartContractsService {
                 ),
             );
         } catch (exception) {
-            throw exception;
+            throw new ForbiddenException(exception.message);
+        }
+    }
+
+    async deleteCollateral({
+        ownerWallet,
+        bankWallet,
+        collateralShares,
+        expirationDate,
+        contractAddress,
+    }: DeleteCollateralDto) {
+        const [account] = await this.web3.eth.getAccounts();
+
+        const NameContract = new this.web3.eth.Contract(
+            contractAbi as any, // "as any" because typescript does not recognize "signature"
+            contractAddress,
+            { from: account, gas: Number(process.env.GAS_VALUE) },
+        );
+
+        try {
+            Logger.log(
+                JSON.stringify(
+                    await NameContract.methods
+                        .deleteCollateral(
+                            ownerWallet,
+                            bankWallet,
+                            collateralShares,
+                            expirationDate,
+                        )
+                        .send(),
+                ),
+            );
+        } catch (exception) {
+            throw new ForbiddenException(exception.message);
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Post, Put } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CreateCollateralDto } from "../dto/create-collateral.dto";
+import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
 import { CollateralService } from "./collateral.service";
 
 @Controller("tokenized-asset/collateral")
@@ -14,8 +15,8 @@ export class CollateralController {
     }
 
     @Delete("delete")
-    deleteCollateral() {
-        return this.collateralService.deleteCollateral();
+    deleteCollateral(@Body() data: DeleteCollateralDto) {
+        return this.collateralService.deleteCollateral(data);
     }
 
     @Put("seize")

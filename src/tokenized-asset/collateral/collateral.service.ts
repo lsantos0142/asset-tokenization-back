@@ -1,9 +1,14 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { CreateCollateralDto } from "../dto/create-collateral.dto";
+import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
 import { Collateral } from "../entities/collateral.entity";
 
 @Injectable()
@@ -57,18 +62,18 @@ export class CollateralService {
         )
             throw new ForbiddenException("Insuficient seller shares");
 
-        const bank = await this.usersService.findUserByQuery({
-            where: {
-                id: bankUserId,
-            },
-            relations: ["ownerships", "ownerships.tokenizedAsset"],
-        });
+        const { walletAddress: bankWallet } =
+            await this.usersService.findUserByQuery({
+                where: {
+                    id: bankUserId,
+                },
+            });
 
-        if (!bank.walletAddress)
-            throw new ForbiddenException("Buyer doesn't have wallet connected");
+        if (!bankWallet)
+            throw new ForbiddenException("Bank doesn't have wallet connected");
 
         await this.smartContractsService.createCollateral({
-            bankWallet: bank.walletAddress,
+            bankWallet: bankWallet,
             sellerWallet: seller.walletAddress,
             collateralShares: Math.round(collateralShares * 1000),
             expirationDate: Math.round(expirationDate.getTime() / 1000),
@@ -76,7 +81,7 @@ export class CollateralService {
         });
 
         let bankCollateral = this.collateralRepository.create({
-            bankWallet: bank.walletAddress,
+            bankWallet: bankWallet,
             percentage: collateralShares,
             expirationDate: expirationDateISOString,
         });
@@ -85,7 +90,73 @@ export class CollateralService {
         return await this.collateralRepository.save(bankCollateral);
     }
 
-    async deleteCollateral() {}
+    async deleteCollateral({
+        bankUserId,
+        ownerUserId,
+        collateralShares,
+        expirationDateISOString,
+        contractAddress,
+    }: DeleteCollateralDto) {
+        let expirationDate = new Date(expirationDateISOString);
+
+        const owner = await this.usersService.findUserByQuery({
+            where: {
+                id: ownerUserId,
+            },
+            relations: [
+                "ownerships",
+                "ownerships.tokenizedAsset",
+                "ownerships.collaterals",
+            ],
+        });
+
+        const ownerOwnership = owner.ownerships.find(
+            (o) => o.tokenizedAsset.contractAddress === contractAddress,
+        );
+
+        if (!owner.walletAddress)
+            throw new ForbiddenException("Owner doesn't have wallet connected");
+
+        if (!ownerOwnership)
+            throw new ForbiddenException("Owner isn't owner of asset");
+
+        const { walletAddress: bankWallet } =
+            await this.usersService.findUserByQuery({
+                where: {
+                    id: bankUserId,
+                },
+            });
+
+        if (!bankWallet)
+            throw new ForbiddenException("Bank doesn't have wallet connected");
+
+        let collateral = ownerOwnership.collaterals.find(
+            (c) =>
+                c.bankWallet === bankWallet &&
+                c.expirationDate === expirationDateISOString &&
+                Number(c.percentage) === Number(collateralShares),
+        );
+
+        await this.smartContractsService.deleteCollateral({
+            bankWallet: bankWallet,
+            ownerWallet: owner.walletAddress,
+            collateralShares: Math.round(collateralShares * 1000),
+            expirationDate: Math.round(expirationDate.getTime() / 1000),
+            contractAddress: contractAddress,
+        });
+
+        let response: any = [];
+
+        if (!collateral) {
+            throw new NotFoundException("Collateral not found");
+        } else {
+            response = await this.collateralRepository.softDelete({
+                id: collateral.id,
+            });
+
+            return collateral;
+        }
+    }
 
     async seizeCollateral() {
         return await this.collateralRepository.find();
