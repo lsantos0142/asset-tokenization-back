@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseUUIDPipe,
+    Post,
+    Put,
+} from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CreateTokenizationProposalDto } from "../dto/create-tokenization-proposal.dto";
 import { ProposalService } from "./proposal.service";
@@ -19,12 +27,12 @@ export class ProposalController {
     }
 
     @Put("refuse/:id")
-    refuseProposal(@Param("id") id: string) {
-        return this.proposalService.refuseProposal(+id);
+    refuseProposal(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.proposalService.refuseProposal(id);
     }
 
     @Put("accept/:id")
-    acceptProposal(@Param("id") id: string) {
-        return this.proposalService.acceptProposal(+id);
+    acceptProposal(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.proposalService.acceptProposal(id);
     }
 }

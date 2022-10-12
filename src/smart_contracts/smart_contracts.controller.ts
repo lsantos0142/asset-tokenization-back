@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
+import { CreateTokenizationDto } from "./dto/create-tokenization.dto";
 import { SmartContractsService } from "./smart_contracts.service";
 
 @Controller("smart-contracts")

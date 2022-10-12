@@ -16,9 +16,9 @@ import { TokenizationProposal } from "./tokenization-proposal.entity";
 @Entity({ name: "TokenizedAsset" })
 export class TokenizedAsset extends BaseEntity {
     //#region baseEntity fields
-    @PrimaryGeneratedColumn()
-    @PrimaryColumn({ type: "bigint" })
-    public id: number;
+    @PrimaryGeneratedColumn("uuid")
+    @PrimaryColumn({ type: "uuid" })
+    public id: string;
 
     @CreateDateColumn()
     public createdAt: Date;

@@ -74,7 +74,7 @@ export class ProposalService {
         });
     }
 
-    async refuseProposal(id: number) {
+    async refuseProposal(id: string) {
         const proposal = await this.proposalRepository.findOneByOrFail({
             id,
         });
@@ -84,7 +84,7 @@ export class ProposalService {
         return proposal;
     }
 
-    async acceptProposal(id: number) {
+    async acceptProposal(id: string) {
         const proposal = await this.proposalRepository.findOneOrFail({
             where: {
                 id: id,

@@ -2,6 +2,7 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     ManyToOne,
     PrimaryColumn,
@@ -19,15 +20,18 @@ export enum OfferStatus {
 @Entity({ name: "Offer" })
 export class Offer extends BaseEntity {
     //#region baseEntity fields
-    @PrimaryGeneratedColumn()
-    @PrimaryColumn({ type: "bigint" })
-    public id: number;
+    @PrimaryGeneratedColumn("uuid")
+    @PrimaryColumn({ type: "uuid" })
+    public id: string;
 
     @CreateDateColumn()
     public createdAt: Date;
 
     @UpdateDateColumn()
     public updatedAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: string;
     //#endregion
 
     @Column({ type: "decimal" })

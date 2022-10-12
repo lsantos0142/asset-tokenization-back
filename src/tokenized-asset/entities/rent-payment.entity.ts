@@ -13,9 +13,9 @@ import { Ownership } from "./ownership.entity";
 @Entity({ name: "RentPayment" })
 export class RentPayment extends BaseEntity {
     //#region baseEntity fields
-    @PrimaryGeneratedColumn()
-    @PrimaryColumn({ type: "bigint" })
-    public id: number;
+    @PrimaryGeneratedColumn("uuid")
+    @PrimaryColumn({ type: "uuid" })
+    public id: string;
 
     @CreateDateColumn()
     public createdAt: Date;

@@ -4,7 +4,8 @@ import { readFileSync } from "fs";
 import { contractAbi } from "smart_contracts/contract-abi";
 import { compile } from "solc";
 import Web3 from "web3";
-import { CreateTokenizationDto } from "./dto/create-tokenization-dto";
+import { CreateCollateralDto } from "./dto/create-collateral.dto";
+import { CreateTokenizationDto } from "./dto/create-tokenization.dto";
 import { TransferOwnershipDto } from "./dto/transfer-ownership.dto";
 
 export class SmartContractsService {
@@ -15,8 +16,7 @@ export class SmartContractsService {
 
     constructor() {
         this.mnemonic = process.env.MNEMONIC;
-        this.providerOrUrl =
-            "https://goerli.infura.io/v3/87902c981be0460c94930d13b31b7eb0";
+        this.providerOrUrl = process.env.INFURA_URL;
 
         this.provider = new HDWalletProvider({
             mnemonic: this.mnemonic,
@@ -61,7 +61,7 @@ export class SmartContractsService {
                     proposal.registration,
                 ],
             })
-            .send({ from: account, gas: 10000000 });
+            .send({ from: account, gas: Number(process.env.GAS_VALUE) });
         Logger.log("Contract Address => " + _address);
         Logger.log("Abi => " + JSON.stringify(abi));
 
@@ -74,7 +74,7 @@ export class SmartContractsService {
         const NameContract = new this.web3.eth.Contract(
             contractAbi as any, // "as any" because typescript does not recognize "signature"
             "0x0E8804e079B6bceCa009E75B453C0466c1fA5516",
-            { from: account, gas: 10000000 },
+            { from: account, gas: Number(process.env.GAS_VALUE) },
         );
 
         return JSON.stringify(
@@ -96,7 +96,7 @@ export class SmartContractsService {
         const NameContract = new this.web3.eth.Contract(
             contractAbi as any, // "as any" because typescript does not recognize "signature"
             contractAddress,
-            { from: account, gas: 10000000 },
+            { from: account, gas: Number(process.env.GAS_VALUE) },
         );
 
         try {
@@ -108,6 +108,39 @@ export class SmartContractsService {
                             seller,
                             buyer,
                             isEffectiveOwnerTransfer,
+                        )
+                        .send(),
+                ),
+            );
+        } catch (exception) {
+            throw exception;
+        }
+    }
+
+    async createCollateral({
+        bankWallet,
+        sellerWallet,
+        collateralShares,
+        expirationDate,
+        contractAddress,
+    }: CreateCollateralDto) {
+        const [account] = await this.web3.eth.getAccounts();
+
+        const NameContract = new this.web3.eth.Contract(
+            contractAbi as any, // "as any" because typescript does not recognize "signature"
+            contractAddress,
+            { from: account, gas: Number(process.env.GAS_VALUE) },
+        );
+
+        try {
+            Logger.log(
+                JSON.stringify(
+                    await NameContract.methods
+                        .createCollateral(
+                            bankWallet,
+                            sellerWallet,
+                            collateralShares,
+                            expirationDate,
                         )
                         .send(),
                 ),

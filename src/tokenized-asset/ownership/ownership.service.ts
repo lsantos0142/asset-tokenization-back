@@ -44,6 +44,11 @@ export class OwnershipService {
             (o) => o.tokenizedAsset.contractAddress === contractAddress,
         );
 
+        if (!seller.walletAddress)
+            throw new ForbiddenException(
+                "Seller doesn't have wallet connected",
+            );
+
         if (!sellerOwnership)
             throw new ForbiddenException("Seller isn't owner of asset");
 
@@ -59,6 +64,9 @@ export class OwnershipService {
             },
             relations: ["ownerships", "ownerships.tokenizedAsset"],
         });
+
+        if (!buyer.walletAddress)
+            throw new ForbiddenException("Buyer doesn't have wallet connected");
 
         let buyerOwnership = buyer.ownerships.find(
             (o) => o.tokenizedAsset.contractAddress === contractAddress,
