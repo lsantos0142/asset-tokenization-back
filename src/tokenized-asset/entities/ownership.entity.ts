@@ -3,6 +3,7 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     ManyToOne,
     OneToMany,
@@ -27,6 +28,9 @@ export class Ownership extends BaseEntity {
 
     @UpdateDateColumn()
     public updatedAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: string;
     //#endregion
 
     @Column({ type: "boolean" })

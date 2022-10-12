@@ -1,20 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OwnershipController } from './ownership.controller';
-import { OwnershipService } from './ownership.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { OwnershipController } from "./ownership.controller";
+import { OwnershipService } from "./ownership.service";
 
-describe('OwnershipController', () => {
-  let controller: OwnershipController;
+describe("OwnershipController", () => {
+    let controller: OwnershipController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [OwnershipController],
-      providers: [OwnershipService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [OwnershipController],
+            providers: [OwnershipService],
+        }).compile();
 
-    controller = module.get<OwnershipController>(OwnershipController);
-  });
+        controller = module.get<OwnershipController>(OwnershipController);
+    });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    it("should be defined", () => {
+        expect(controller).toBeDefined();
+    });
 });

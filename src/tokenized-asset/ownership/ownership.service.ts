@@ -86,11 +86,21 @@ export class OwnershipService {
             buyerOwnership.tokenizedAsset = sellerOwnership.tokenizedAsset;
         }
 
-        sellerOwnership.isEffectiveOwner = !isEffectiveOwnerTransfer;
+        sellerOwnership.isEffectiveOwner =
+            sellerOwnership.isEffectiveOwner && !isEffectiveOwnerTransfer;
         sellerOwnership.percentageOwned -= transferShares;
 
         await this.ownershipRepository.save(buyerOwnership);
-        await this.ownershipRepository.save(sellerOwnership);
+        if (
+            !sellerOwnership.isEffectiveOwner &&
+            sellerOwnership.percentageOwned === 0
+        ) {
+            await this.ownershipRepository.softDelete({
+                id: sellerOwnership.id,
+            });
+        } else {
+            await this.ownershipRepository.save(sellerOwnership);
+        }
 
         return buyerOwnership;
     }
