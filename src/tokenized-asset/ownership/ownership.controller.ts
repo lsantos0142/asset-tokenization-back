@@ -15,12 +15,12 @@ import { OwnershipService } from "./ownership.service";
 export class OwnershipController {
     constructor(private readonly ownershipService: OwnershipService) {}
 
-    @Get("ownership/get-by-user/:id")
+    @Get("get-by-user/:id")
     getOwnershipsByUser(@Param("id", new ParseUUIDPipe()) id: string) {
         return this.ownershipService.getOwnershipsByUser(id);
     }
 
-    @Post("ownership/transfer")
+    @Post("transfer")
     upsertOwnershipFromTransfer(@Body() data: UpsertOwnershipDto) {
         return this.ownershipService.upsertOwnershipFromTransfer(data);
     }
