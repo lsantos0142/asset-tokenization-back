@@ -11,6 +11,7 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { CreateCollateralDto } from "../dto/create-collateral.dto";
 import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
+import { SeizeCollateralDto } from "../dto/seize-collateral.dto";
 import { CollateralService } from "./collateral.service";
 
 @Controller("tokenized-asset/collateral")
@@ -28,13 +29,19 @@ export class CollateralController {
         return this.collateralService.createCollateral(data);
     }
 
-    @Delete("delete")
-    deleteCollateral(@Body() data: DeleteCollateralDto) {
-        return this.collateralService.deleteCollateral(data);
+    @Delete("delete/:id")
+    deleteCollateral(
+        @Param("id", new ParseUUIDPipe()) id: string,
+        @Body() data: DeleteCollateralDto,
+    ) {
+        return this.collateralService.deleteCollateral(id, data);
     }
 
-    @Put("seize")
-    seizeCollateral() {
-        return this.collateralService.seizeCollateral();
+    @Put("seize/:id")
+    seizeCollateral(
+        @Param("id", new ParseUUIDPipe()) id: string,
+        @Body() data: SeizeCollateralDto,
+    ) {
+        return this.collateralService.seizeCollateral(id, data);
     }
 }

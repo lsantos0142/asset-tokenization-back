@@ -4,10 +4,6 @@ export class DeleteCollateralDto {
     @IsString()
     @IsUUID()
     @IsNotEmpty()
-    bankUserId: string;
-    @IsString()
-    @IsUUID()
-    @IsNotEmpty()
     ownerUserId: string;
     @IsNumber()
     @IsNotEmpty()

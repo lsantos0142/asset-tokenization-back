@@ -9,6 +9,7 @@ import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { CreateCollateralDto } from "../dto/create-collateral.dto";
 import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
+import { SeizeCollateralDto } from "../dto/seize-collateral.dto";
 import { Collateral } from "../entities/collateral.entity";
 
 @Injectable()
@@ -21,13 +22,16 @@ export class CollateralService {
     ) {}
 
     async getCollateralByUser(id: string) {
-        return await this.collateralRepository
-            .createQueryBuilder("collateral")
-            .innerJoin("collateral.ownership", "ownership")
-            .innerJoin("ownership.user", "user")
-            .where("user.id = :id", { id })
-            .select(["collateral"])
-            .getMany();
+        return await this.collateralRepository.find({
+            where: {
+                ownership: {
+                    user: {
+                        id: id,
+                    },
+                },
+            },
+            relations: ["ownership", "ownership.tokenizedAsset"],
+        });
     }
 
     async createCollateral({
@@ -100,13 +104,15 @@ export class CollateralService {
         return await this.collateralRepository.save(bankCollateral);
     }
 
-    async deleteCollateral({
-        bankUserId,
-        ownerUserId,
-        collateralShares,
-        expirationDateISOString,
-        contractAddress,
-    }: DeleteCollateralDto) {
+    async deleteCollateral(
+        bankUserId: string,
+        {
+            ownerUserId,
+            collateralShares,
+            expirationDateISOString,
+            contractAddress,
+        }: DeleteCollateralDto,
+    ) {
         let expirationDate = new Date(expirationDateISOString);
 
         const owner = await this.usersService.findUserByQuery({
@@ -168,7 +174,14 @@ export class CollateralService {
         }
     }
 
-    async seizeCollateral() {
-        return await this.collateralRepository.find();
+    async seizeCollateral(id: string, data: SeizeCollateralDto) {
+        let collateral: Collateral;
+        try {
+            collateral = await this.collateralRepository.findOneByOrFail({
+                id,
+            });
+        } catch (e) {
+            throw new NotFoundException(e.message);
+        }
     }
 }
