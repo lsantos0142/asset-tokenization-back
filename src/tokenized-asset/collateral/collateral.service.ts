@@ -20,6 +20,16 @@ export class CollateralService {
         private readonly smartContractsService: SmartContractsService,
     ) {}
 
+    async getCollateralByUser(id: string) {
+        return await this.collateralRepository
+            .createQueryBuilder("collateral")
+            .innerJoin("collateral.ownership", "ownership")
+            .innerJoin("ownership.user", "user")
+            .where("user.id = :id", { id })
+            .select(["collateral"])
+            .getMany();
+    }
+
     async createCollateral({
         bankUserId,
         sellerUserId,
