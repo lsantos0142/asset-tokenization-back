@@ -24,6 +24,11 @@ export class CollateralController {
         return this.collateralService.getCollateralByUser(id);
     }
 
+    @Get("get-by-bank/:id")
+    getCollateralByBank(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.collateralService.getCollateralByBank(id);
+    }
+
     @Post("create")
     createCollateral(@Body() data: CreateCollateralDto) {
         return this.collateralService.createCollateral(data);

@@ -34,6 +34,22 @@ export class CollateralService {
         });
     }
 
+    async getCollateralByBank(id: string) {
+        const { walletAddress: bankWallet } =
+            await this.usersService.findUserByQuery({
+                where: { id },
+                select: ["walletAddress"],
+            });
+
+        if (!bankWallet)
+            throw new ForbiddenException("Bank doesn't have wallet connected");
+
+        return await this.collateralRepository.find({
+            where: { bankWallet },
+            relations: ["ownership", "ownership.tokenizedAsset"],
+        });
+    }
+
     async createCollateral({
         bankUserId,
         sellerUserId,
