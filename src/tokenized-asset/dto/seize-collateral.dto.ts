@@ -5,13 +5,4 @@ export class SeizeCollateralDto {
     @IsUUID()
     @IsNotEmpty()
     bankUserId: string;
-    @IsNumber()
-    @IsNotEmpty()
-    collateralShares: number;
-    @IsString()
-    @IsNotEmpty()
-    expirationDateISOString: string;
-    @IsString()
-    @IsNotEmpty()
-    contractAddress: string;
 }

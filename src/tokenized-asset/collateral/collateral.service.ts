@@ -190,14 +190,32 @@ export class CollateralService {
         }
     }
 
-    async seizeCollateral(id: string, data: SeizeCollateralDto) {
-        let collateral: Collateral;
-        try {
-            collateral = await this.collateralRepository.findOneByOrFail({
-                id,
+    async seizeCollateral(id: string, { bankUserId }: SeizeCollateralDto) {
+        let collateral = await this.collateralRepository.findOne({
+            where: { id },
+        });
+
+        const { walletAddress: bankWallet } =
+            await this.usersService.findUserByQuery({
+                where: { id },
+                select: ["walletAddress"],
             });
-        } catch (e) {
-            throw new NotFoundException(e.message);
-        }
+
+        if (!bankWallet)
+            throw new ForbiddenException("Bank doesn't have wallet connected");
+
+        if (bankWallet !== collateral.bankWallet)
+            throw new ForbiddenException(
+                "Bank provided not associated with collateral",
+            );
+
+        if (new Date(collateral.expirationDate) > new Date())
+            throw new ForbiddenException("Expiration date not reached yet");
+
+        // await this.deleteCollateral(bankUserId, {
+        //     ownerUserId:
+        // })
+
+        return collateral;
     }
 }
