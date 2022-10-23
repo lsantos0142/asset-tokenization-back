@@ -1,3 +1,4 @@
+import { User } from "src/users/entities/user.entity";
 import {
     BaseEntity,
     Column,
@@ -13,6 +14,7 @@ import { Ownership } from "./ownership.entity";
 
 export enum OfferStatus {
     AVAILABLE,
+    WAITING_PAYMENT,
     ACCEPTED,
     CANCELED,
 }
@@ -43,6 +45,9 @@ export class Offer extends BaseEntity {
     @Column({ type: "enum", enum: OfferStatus, default: OfferStatus.AVAILABLE })
     public status: string;
 
-    @ManyToOne((type) => Ownership, (uta) => uta.offers)
+    @ManyToOne(() => Ownership, (o) => o.offers)
     public ownership: Ownership;
+
+    @ManyToOne(() => User, (u) => u.requestedOffers)
+    public currentBuyer: User;
 }

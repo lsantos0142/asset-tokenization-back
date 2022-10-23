@@ -1,4 +1,5 @@
 import { hashSync } from "bcrypt";
+import { Offer } from "src/tokenized-asset/entities/offer.entity";
 import { Ownership } from "src/tokenized-asset/entities/ownership.entity";
 import { TokenizationProposal } from "src/tokenized-asset/entities/tokenization-proposal.entity";
 import {
@@ -37,6 +38,9 @@ export class User extends BaseEntity {
 
     @OneToMany(() => TokenizationProposal, (tp) => tp.user)
     public tokenizationProposal: TokenizationProposal[];
+
+    @OneToMany(() => Offer, (o) => o.currentBuyer)
+    public requestedOffers: Offer[];
 
     @BeforeInsert()
     hashPassword = () => {
