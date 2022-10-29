@@ -13,13 +13,19 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async getTokens(id: string, username: string, isAdmin: boolean) {
+    async getTokens(
+        id: string,
+        username: string,
+        isAdmin: boolean,
+        walletAddress: string,
+    ) {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync(
                 {
                     sub: id,
                     username,
                     isAdmin,
+                    walletAddress,
                 },
                 { secret: process.env.AT_JWT_SECRET_KEY, expiresIn: 60 * 30 },
             ),
@@ -54,6 +60,7 @@ export class AuthService {
             user.id,
             user.username,
             user.isAdmin,
+            user.walletAddress,
         );
         await this.userService.updateRtHash(user.id, tokens.refreshToken);
         return tokens;
@@ -72,6 +79,7 @@ export class AuthService {
                 user.id,
                 user.username,
                 user.isAdmin,
+                user.walletAddress,
             );
             await this.userService.updateRtHash(user.id, tokens.refreshToken);
             return res.status(HttpStatus.OK).json(tokens);
@@ -93,6 +101,7 @@ export class AuthService {
             user.id,
             user.username,
             user.isAdmin,
+            user.walletAddress,
         );
         await this.userService.updateRtHash(user.id, tokens.refreshToken);
         return tokens;
