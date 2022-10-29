@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsNotEmpty } from "class-validator";
+import { DeleteCollateralDto } from "./delete-collateral.dto";
 
-export class SeizeCollateralDto {
-    @IsString()
-    @IsUUID()
+export class SeizeCollateralDto extends DeleteCollateralDto {
+    @IsBoolean()
     @IsNotEmpty()
-    bankUserId: string;
+    isOwnershipTransfer: boolean;
 }

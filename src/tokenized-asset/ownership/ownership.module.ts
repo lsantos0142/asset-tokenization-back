@@ -14,5 +14,6 @@ import { OwnershipService } from "./ownership.service";
     ],
     controllers: [OwnershipController],
     providers: [OwnershipService],
+    exports: [OwnershipService],
 })
 export class OwnershipModule {}

@@ -11,6 +11,7 @@ import { CreateCollateralDto } from "../dto/create-collateral.dto";
 import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
 import { SeizeCollateralDto } from "../dto/seize-collateral.dto";
 import { Collateral } from "../entities/collateral.entity";
+import { OwnershipService } from "../ownership/ownership.service";
 
 @Injectable()
 export class CollateralService {
@@ -19,6 +20,7 @@ export class CollateralService {
         private collateralRepository: Repository<Collateral>,
         private readonly usersService: UsersService,
         private readonly smartContractsService: SmartContractsService,
+        private readonly ownershipService: OwnershipService,
     ) {}
 
     async getCollateralByUser(id: string) {
@@ -120,15 +122,13 @@ export class CollateralService {
         return await this.collateralRepository.save(bankCollateral);
     }
 
-    async deleteCollateral(
-        bankUserId: string,
-        {
-            ownerUserId,
-            collateralShares,
-            expirationDateISOString,
-            contractAddress,
-        }: DeleteCollateralDto,
-    ) {
+    async deleteCollateral({
+        bankUserId,
+        ownerUserId,
+        collateralShares,
+        expirationDateISOString,
+        contractAddress,
+    }: DeleteCollateralDto) {
         let expirationDate = new Date(expirationDateISOString);
 
         const owner = await this.usersService.findUserByQuery({
@@ -190,14 +190,14 @@ export class CollateralService {
         }
     }
 
-    async seizeCollateral(id: string, { bankUserId }: SeizeCollateralDto) {
+    async seizeCollateral(collateralId: string, data: SeizeCollateralDto) {
         let collateral = await this.collateralRepository.findOne({
-            where: { id },
+            where: { id: collateralId },
         });
 
         const { walletAddress: bankWallet } =
             await this.usersService.findUserByQuery({
-                where: { id },
+                where: { id: data.bankUserId },
                 select: ["walletAddress"],
             });
 
@@ -212,9 +212,15 @@ export class CollateralService {
         if (new Date(collateral.expirationDate) > new Date())
             throw new ForbiddenException("Expiration date not reached yet");
 
-        // await this.deleteCollateral(bankUserId, {
-        //     ownerUserId:
-        // })
+        await this.deleteCollateral(data);
+
+        await this.ownershipService.upsertOwnershipFromTransfer({
+            buyerUserId: data.bankUserId,
+            contractAddress: data.contractAddress,
+            isEffectiveOwnerTransfer: data.isOwnershipTransfer,
+            sellerUserId: data.ownerUserId,
+            transferShares: data.collateralShares,
+        });
 
         return collateral;
     }

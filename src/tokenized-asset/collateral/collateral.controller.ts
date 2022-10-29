@@ -34,19 +34,16 @@ export class CollateralController {
         return this.collateralService.createCollateral(data);
     }
 
-    @Delete("delete/:id")
-    deleteCollateral(
-        @Param("id", new ParseUUIDPipe()) id: string,
-        @Body() data: DeleteCollateralDto,
-    ) {
-        return this.collateralService.deleteCollateral(id, data);
+    @Delete("delete")
+    deleteCollateral(@Body() data: DeleteCollateralDto) {
+        return this.collateralService.deleteCollateral(data);
     }
 
     @Put("seize/:id")
     seizeCollateral(
-        @Param("id", new ParseUUIDPipe()) id: string,
+        @Param("id", new ParseUUIDPipe()) collateralId: string,
         @Body() data: SeizeCollateralDto,
     ) {
-        return this.collateralService.seizeCollateral(id, data);
+        return this.collateralService.seizeCollateral(collateralId, data);
     }
 }
