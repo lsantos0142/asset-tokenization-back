@@ -55,7 +55,7 @@ export class ProposalService {
 
         if (!!existingProposal)
             throw new ForbiddenException(
-                "Proposal with given registration already active on platform",
+                "Imóvel com número de registro já existente na plataforma",
             );
 
         const user = await this.usersService.findOneOrFail({ id: data.userId });
