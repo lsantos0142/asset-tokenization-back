@@ -9,6 +9,9 @@ export class CreateUserDto {
     @IsNotEmpty({ message: "O campo de usuário é obrigatório" })
     username: string;
 
+    @IsNotEmpty({ message: "O campo de cpf é obrigatório" })
+    cpf: string;
+
     @IsNotEmpty({ message: "A senha é obrigatória" })
     @Matches(RegExHelper.password, { message: MessagesHelper.PASSWORD_VALID })
     password: string;

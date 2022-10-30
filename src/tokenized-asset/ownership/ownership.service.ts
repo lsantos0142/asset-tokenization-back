@@ -82,12 +82,17 @@ export class OwnershipService {
 
         if (!!buyerOwnership) {
             buyerOwnership.percentageOwned =
-                Number(buyerOwnership.percentageOwned) + Number(transferShares);
-            buyerOwnership.isEffectiveOwner = isEffectiveOwnerTransfer;
+                Math.round(
+                    (Number(buyerOwnership.percentageOwned) +
+                        Number(transferShares)) *
+                        1000,
+                ) / 1000;
+            buyerOwnership.isEffectiveOwner =
+                buyerOwnership.isEffectiveOwner || isEffectiveOwnerTransfer;
         } else {
             buyerOwnership = this.ownershipRepository.create({
                 isEffectiveOwner: isEffectiveOwnerTransfer,
-                percentageOwned: transferShares,
+                percentageOwned: Math.round(transferShares * 1000) / 1000,
             });
 
             buyerOwnership.user = buyer;
@@ -96,7 +101,10 @@ export class OwnershipService {
 
         sellerOwnership.isEffectiveOwner =
             sellerOwnership.isEffectiveOwner && !isEffectiveOwnerTransfer;
-        sellerOwnership.percentageOwned -= transferShares;
+        sellerOwnership.percentageOwned =
+            Math.round(
+                (sellerOwnership.percentageOwned - transferShares) * 1000,
+            ) / 1000;
 
         await this.ownershipRepository.save(buyerOwnership);
         if (

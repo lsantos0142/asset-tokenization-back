@@ -8,5 +8,8 @@ export class UpdateUserDto {
     username: string;
 
     @IsNotEmpty()
+    cpf: string;
+
+    @IsNotEmpty()
     walletAddress: string;
 }

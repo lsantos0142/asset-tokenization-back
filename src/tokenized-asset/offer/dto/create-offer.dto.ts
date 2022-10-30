@@ -6,5 +6,7 @@ export class CreateOfferDto {
     @IsNotEmpty()
     amount: number;
     @IsNotEmpty()
+    isEffectiveTransfer: boolean;
+    @IsNotEmpty()
     ownershipId: string;
 }

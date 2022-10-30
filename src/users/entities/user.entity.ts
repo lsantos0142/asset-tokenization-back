@@ -25,6 +25,9 @@ export class User extends BaseEntity {
     public name: string;
 
     @Column({ type: "varchar", unique: true })
+    public cpf: string;
+
+    @Column({ type: "varchar", unique: true })
     public username: string;
 
     @Column({ type: "varchar" })

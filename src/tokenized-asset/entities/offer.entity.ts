@@ -42,6 +42,9 @@ export class Offer extends BaseEntity {
     @Column({ type: "decimal" })
     public amount: number;
 
+    @Column({ type: "boolean" })
+    public isEffectiveTransfer: boolean;
+
     @Column({ type: "enum", enum: OfferStatus, default: OfferStatus.AVAILABLE })
     public status: string;
 

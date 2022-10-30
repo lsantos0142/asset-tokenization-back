@@ -61,6 +61,7 @@ export class UsersService {
         return {
             id: user.id,
             name: user.name,
+            cpf: user.cpf,
             username: user.username,
             walletAddress: user.walletAddress,
             isAdmin: user.isAdmin,
@@ -75,6 +76,7 @@ export class UsersService {
         return {
             id: user.id,
             name: user.name,
+            cpf: user.cpf,
             username: user.username,
             walletAddress: user.walletAddress,
         };
