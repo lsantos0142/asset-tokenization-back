@@ -71,6 +71,7 @@ export class ProposalService {
     async getAllPendingProposal() {
         return await this.proposalRepository.find({
             where: { status: "0" },
+            relations: ["user"],
         });
     }
 
