@@ -33,7 +33,7 @@ export class OfferService {
     async getAllOffersByStatus(status: string) {
         const offers = await this.offerRepository.find({
             where: {
-                status: status,
+                status: OfferStatus[status],
             },
             relations: ["ownership", "ownership.tokenizedAsset"],
         });
