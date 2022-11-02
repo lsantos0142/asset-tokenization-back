@@ -45,7 +45,7 @@ export class Ownership extends BaseEntity {
     @OneToMany(() => Offer, (offer) => offer.ownership)
     public offers: Offer[];
 
-    @OneToMany(() => RentPayment, (rp) => rp.ownerships)
+    @OneToMany(() => RentPayment, (rp) => rp.ownership)
     public rentPayments: RentPayment[];
 
     @ManyToOne(() => User, (user) => user.ownerships)

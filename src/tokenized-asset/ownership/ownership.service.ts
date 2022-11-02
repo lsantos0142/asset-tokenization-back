@@ -5,15 +5,40 @@ import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { UpsertOwnershipDto } from "../dto/upsert-ownership.dto";
 import { Ownership } from "../entities/ownership.entity";
+import { TokenizedAsset } from "../entities/tokenized-asset.entity";
 
 @Injectable()
 export class OwnershipService {
     constructor(
         @InjectRepository(Ownership)
         private ownershipRepository: Repository<Ownership>,
+        @InjectRepository(TokenizedAsset)
+        private assetRepository: Repository<TokenizedAsset>,
         private readonly usersService: UsersService,
         private readonly smartContractsService: SmartContractsService,
     ) {}
+
+    async getAllOwnershipsByAsset(id: string) {
+        const asset = await this.assetRepository.findOneOrFail({
+            where: {
+                id: id,
+            },
+            relations: ["ownerships"],
+        });
+
+        return asset.ownerships;
+    }
+
+    async getEffectiveOwnerByAsset(id: string) {
+        const asset = await this.assetRepository.findOneOrFail({
+            where: {
+                id: id,
+            },
+            relations: ["ownerships", "ownerships.user"],
+        });
+
+        return asset.ownerships.find((o) => o.isEffectiveOwner);
+    }
 
     async getOwnershipsByUser(userId: string) {
         const ownerships = this.ownershipRepository

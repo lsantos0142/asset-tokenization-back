@@ -10,6 +10,11 @@ import {
 } from "typeorm";
 import { Ownership } from "./ownership.entity";
 
+export enum RentPaymentStatus {
+    PENDING_APPROVAL,
+    PAID,
+}
+
 @Entity({ name: "RentPayment" })
 export class RentPayment extends BaseEntity {
     //#region baseEntity fields
@@ -33,6 +38,13 @@ export class RentPayment extends BaseEntity {
     @Column({ type: "decimal" })
     public amount: number;
 
+    @Column({
+        type: "enum",
+        enum: RentPaymentStatus,
+        default: RentPaymentStatus.PENDING_APPROVAL,
+    })
+    public status: string;
+
     @ManyToOne((type) => Ownership, (uta) => uta.rentPayments)
-    public ownerships: Ownership;
+    public ownership: Ownership;
 }
