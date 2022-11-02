@@ -21,6 +21,11 @@ export class OfferController {
         return this.offerService.getOffersByOwnership(id);
     }
 
+    @Get("get-by-id/:id")
+    getOffersById(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.offerService.getOffersById(id);
+    }
+
     @Get("get-all")
     getAllOffers(@Query("status") status: string) {
         return this.offerService.getAllOffersByStatus(status);

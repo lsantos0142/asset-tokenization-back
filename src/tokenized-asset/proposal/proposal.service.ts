@@ -96,13 +96,13 @@ export class ProposalService {
         if (proposal.status.toString() !== ProposalStatus.PENDING.toString())
             throw new ForbiddenException("Proposal must be PENDING");
 
-        proposal.status = ProposalStatus.APPROVED.toString();
-        await this.proposalRepository.save(proposal);
-
         const contractAdress =
             await this.smartContractsService.createTokenization({
                 proposal,
             });
+
+        proposal.status = ProposalStatus.APPROVED.toString();
+        await this.proposalRepository.save(proposal);
 
         const createOwnershipData: CreateOwnershipDto = {
             isEffectiveOwner: true,

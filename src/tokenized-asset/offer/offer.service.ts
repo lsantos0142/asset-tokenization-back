@@ -30,6 +30,21 @@ export class OfferService {
         return ownership.offers;
     }
 
+    async getOffersById(offerId: string) {
+        const offer = await this.offerRepository.findOneOrFail({
+            where: {
+                id: offerId,
+            },
+            relations: [
+                "ownership",
+                "ownership.tokenizedAsset",
+                "ownership.user",
+            ],
+        });
+
+        return offer;
+    }
+
     async getAllOffersByStatus(status: string) {
         const offers = await this.offerRepository.find({
             where: {
