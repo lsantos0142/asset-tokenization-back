@@ -35,7 +35,11 @@ export class OfferService {
             where: {
                 status: OfferStatus[status],
             },
-            relations: ["ownership", "ownership.tokenizedAsset"],
+            relations: [
+                "ownership",
+                "ownership.tokenizedAsset",
+                "ownership.user",
+            ],
         });
 
         return offers;
