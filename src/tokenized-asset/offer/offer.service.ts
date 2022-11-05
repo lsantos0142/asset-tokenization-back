@@ -54,6 +54,7 @@ export class OfferService {
                 "ownership",
                 "ownership.tokenizedAsset",
                 "ownership.user",
+                "currentBuyer",
             ],
         });
 
