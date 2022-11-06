@@ -24,7 +24,6 @@ export const contractAbi = [
         ],
         stateMutability: "nonpayable",
         type: "constructor",
-        signature: "constructor",
     },
     {
         anonymous: false,
@@ -53,10 +52,8 @@ export const contractAbi = [
                 type: "tuple[]",
             },
         ],
-        name: "ShowCollaterals",
+        name: "showCollaterals",
         type: "event",
-        signature:
-            "0x762a1d482e515bf8231fe511fb9cbce8bb5f635bf316faa2a821144949215bfc",
     },
     {
         anonymous: false,
@@ -70,8 +67,6 @@ export const contractAbi = [
         ],
         name: "showEffectiveOwner",
         type: "event",
-        signature:
-            "0xe8e2a5cf2e07719a52678951c69f6f4359fa2c2d7701db47f0958abfc5042f72",
     },
     {
         anonymous: false,
@@ -85,8 +80,6 @@ export const contractAbi = [
         ],
         name: "showOwners",
         type: "event",
-        signature:
-            "0x2d7f4338fc6111fa9b766bcf63f335fb7a9bb0fb6e2dfbdb21f346e13cf32495",
     },
     {
         anonymous: false,
@@ -120,6 +113,28 @@ export const contractAbi = [
                         name: "collaterals",
                         type: "tuple[]",
                     },
+                    {
+                        components: [
+                            {
+                                internalType: "uint256",
+                                name: "amount",
+                                type: "uint256",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "shares",
+                                type: "uint256",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "paymentDate",
+                                type: "uint256",
+                            },
+                        ],
+                        internalType: "struct AssetToken.RentPayment[]",
+                        name: "rentPayments",
+                        type: "tuple[]",
+                    },
                 ],
                 indexed: false,
                 internalType: "struct AssetToken.Owner[]",
@@ -129,8 +144,6 @@ export const contractAbi = [
         ],
         name: "showPercentageOwners",
         type: "event",
-        signature:
-            "0x03435a80186b29dcbad13fe542c5ab4b7e23cf2fb78c6b18bceca1b75c113118",
     },
     {
         inputs: [],
@@ -144,8 +157,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x1ba46cfd",
     },
     {
         inputs: [],
@@ -159,8 +170,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x44de240a",
     },
     {
         inputs: [],
@@ -174,8 +183,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x0850a462",
     },
     {
         inputs: [
@@ -204,7 +211,6 @@ export const contractAbi = [
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
-        signature: "0xcac58d9f",
     },
     {
         inputs: [],
@@ -218,8 +224,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x02d05d3f",
     },
     {
         inputs: [
@@ -248,7 +252,6 @@ export const contractAbi = [
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
-        signature: "0xae46d3ca",
     },
     {
         inputs: [],
@@ -262,8 +265,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0xac041617",
     },
     {
         inputs: [
@@ -283,8 +284,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0xe5653f6f",
     },
     {
         inputs: [
@@ -304,8 +303,125 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x9b1f37e3",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_owner",
+                type: "address",
+            },
+        ],
+        name: "getCollateralsByOwner",
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: "address",
+                        name: "bankId",
+                        type: "address",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "collateralShares",
+                        type: "uint256",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "expirationDate",
+                        type: "uint256",
+                    },
+                ],
+                internalType: "struct AssetToken.Collateral[]",
+                name: "",
+                type: "tuple[]",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_owner",
+                type: "address",
+            },
+        ],
+        name: "getOwnerDetails",
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: "uint256",
+                        name: "shares",
+                        type: "uint256",
+                    },
+                    {
+                        components: [
+                            {
+                                internalType: "address",
+                                name: "bankId",
+                                type: "address",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "collateralShares",
+                                type: "uint256",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "expirationDate",
+                                type: "uint256",
+                            },
+                        ],
+                        internalType: "struct AssetToken.Collateral[]",
+                        name: "collaterals",
+                        type: "tuple[]",
+                    },
+                    {
+                        components: [
+                            {
+                                internalType: "uint256",
+                                name: "amount",
+                                type: "uint256",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "shares",
+                                type: "uint256",
+                            },
+                            {
+                                internalType: "uint256",
+                                name: "paymentDate",
+                                type: "uint256",
+                            },
+                        ],
+                        internalType: "struct AssetToken.RentPayment[]",
+                        name: "rentPayments",
+                        type: "tuple[]",
+                    },
+                ],
+                internalType: "struct AssetToken.Owner",
+                name: "",
+                type: "tuple",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "getOwnersAdresses",
+        outputs: [
+            {
+                internalType: "address[]",
+                name: "",
+                type: "address[]",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
     },
     {
         inputs: [],
@@ -319,8 +435,42 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x8638fb5a",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_owner",
+                type: "address",
+            },
+        ],
+        name: "getRentPaymentsByOwner",
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: "uint256",
+                        name: "amount",
+                        type: "uint256",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "shares",
+                        type: "uint256",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "paymentDate",
+                        type: "uint256",
+                    },
+                ],
+                internalType: "struct AssetToken.RentPayment[]",
+                name: "",
+                type: "tuple[]",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
     },
     {
         inputs: [
@@ -345,8 +495,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x3511de41",
     },
     {
         inputs: [
@@ -366,8 +514,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x025e7c27",
     },
     {
         inputs: [
@@ -387,8 +533,24 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0xc88bfce4",
+    },
+    {
+        inputs: [
+            {
+                internalType: "uint256",
+                name: "_amount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
+                name: "_paymentDate",
+                type: "uint256",
+            },
+        ],
+        name: "registerRentPayment",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
     },
     {
         inputs: [],
@@ -402,8 +564,6 @@ export const contractAbi = [
         ],
         stateMutability: "view",
         type: "function",
-        constant: true,
-        signature: "0x18160ddd",
     },
     {
         inputs: [
@@ -432,6 +592,5 @@ export const contractAbi = [
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
-        signature: "0xfd1c2dd8",
     },
 ];

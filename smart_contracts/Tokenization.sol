@@ -11,11 +11,18 @@ contract AssetToken {
         uint expirationDate;
     }
 
+    struct RentPayment {
+        uint amount;
+        uint shares;
+        uint paymentDate;
+    }
+
     // Define owner structure
 
     struct Owner {
         uint shares;
         Collateral[] collaterals;
+        RentPayment[] rentPayments;
     }
 
     // Define state variables for the contract
@@ -35,7 +42,7 @@ contract AssetToken {
     event showOwners(address[] _owners);
     event showEffectiveOwner(address _effectiveOwner);
     event showPercentageOwners(Owner[] _percentageOwners);
-    event ShowCollaterals(Collateral[] _collaterals);
+    event showCollaterals(Collateral[] _collaterals);
 
     // Define modifiers for function usage
 
@@ -82,6 +89,24 @@ contract AssetToken {
 
     function getOwnersNumber() public view returns(uint) {
         return owners.length;
+    }
+
+    // Function to get owners of the asset
+
+    function getOwnersAdresses() public view returns(address[] memory) {
+        return owners;
+    }
+
+    function getOwnerDetails(address _owner)  public view returns(Owner memory) {
+        return percentageOwners[_owner];
+    }
+
+    function getRentPaymentsByOwner(address _owner) public view onlyPlatformOrOwner returns(RentPayment[] memory) {
+        return percentageOwners[_owner].rentPayments;
+    }
+
+    function getCollateralsByOwner(address _owner) public view onlyPlatformOrOwner returns(Collateral[] memory) {
+        return percentageOwners[_owner].collaterals;
     }
 
     // Function to get number of collaterals associated with owner
@@ -152,7 +177,7 @@ contract AssetToken {
             expirationDate: _expirationDate
         }));
 
-        emit ShowCollaterals(owner.collaterals);
+        emit showCollaterals(owner.collaterals);
     }
 
     // Function to delete collateral associated with bank address of msg.sender from owner
@@ -172,5 +197,19 @@ contract AssetToken {
             }
         }
     }
+
+    // Function to register all rent payment stakes
+
+    function registerRentPayment(uint _amount, uint _paymentDate) public onlyPlatformOrOwner {
+        for(uint256 i = 0; i < owners.length; i++) {
+            Owner storage owner =  percentageOwners[owners[i]]; 
+            owner.rentPayments.push(RentPayment({
+                amount: _amount * owner.shares,
+                shares: owner.shares,
+                paymentDate: _paymentDate
+            }));
+        }
+    }
+
 
 }

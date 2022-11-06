@@ -7,6 +7,7 @@ import Web3 from "web3";
 import { CreateCollateralDto } from "./dto/create-collateral.dto";
 import { CreateTokenizationDto } from "./dto/create-tokenization.dto";
 import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
+import { RegisterRentPaymentsDto } from "./dto/register-rent-payments.dto";
 import { TransferOwnershipDto } from "./dto/transfer-ownership.dto";
 
 export class SmartContractsService {
@@ -179,6 +180,35 @@ export class SmartContractsService {
                             bankWallet,
                             collateralShares,
                             expirationDate,
+                        )
+                        .send(),
+                ),
+            );
+        } catch (exception) {
+            throw new ForbiddenException(exception.message);
+        }
+    }
+
+    async registerRentPayment({
+        contractAddress,
+        amount,
+        paymentDate,
+    }: RegisterRentPaymentsDto) {
+        const [account] = await this.web3.eth.getAccounts();
+
+        const NameContract = new this.web3.eth.Contract(
+            contractAbi as any, // "as any" because typescript does not recognize "signature"
+            contractAddress,
+            { from: account, gas: Number(process.env.GAS_VALUE) },
+        );
+
+        try {
+            Logger.log(
+                JSON.stringify(
+                    await NameContract.methods
+                        .registerRentPayment(
+                            amount,
+                            Math.round(paymentDate.getTime() / 1000),
                         )
                         .send(),
                 ),
