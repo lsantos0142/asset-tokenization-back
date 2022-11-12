@@ -79,14 +79,12 @@ export class SmartContractsService {
 
         const NameContract = new this.web3.eth.Contract(
             contractAbi as any, // "as any" because typescript does not recognize "signature"
-            "0x0E8804e079B6bceCa009E75B453C0466c1fA5516",
+            "0xd2a5bC10698FD955D1Fe6cb468a17809A08fd005",
             { from: account, gas: Number(process.env.GAS_VALUE) },
         );
-
+        this.web3.eth.handleRevert = true;
         return JSON.stringify(
-            await NameContract.methods
-                .percentageOwners("0x7E2CdEcA4cC308B5253118d7dC99B124EB3a0556")
-                .call(),
+            await NameContract.methods.getAllOwnersDetails().call(),
         );
     }
 
@@ -228,13 +226,7 @@ export class SmartContractsService {
         );
 
         try {
-            const response = await NameContract.methods
-                .getAllOwnersDetails()
-                .call();
-
-            Logger.log(JSON.stringify(response));
-
-            return response;
+            return await NameContract.methods.getAllOwnersDetails().call();
         } catch (exception) {
             Logger.log(exception);
             throw exception;

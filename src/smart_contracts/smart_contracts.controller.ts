@@ -19,6 +19,6 @@ export class SmartContractsController {
 
     @Get("methods")
     testMethods() {
-        return this.smartContractsService.getAllOwnersDetails("");
+        return this.smartContractsService.testMethods();
     }
 }

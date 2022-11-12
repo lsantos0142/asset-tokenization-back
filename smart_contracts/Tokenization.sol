@@ -21,7 +21,7 @@ contract AssetToken {
 
     struct Owner {
         uint shares;
-        address walletId;
+        address walletAddress;
         Collateral[] collaterals;
         RentPayment[] rentPayments;
     }
@@ -73,7 +73,7 @@ contract AssetToken {
         effectiveOwner = _effectiveOwner;
         totalSupply = 1000;
         percentageOwners[_effectiveOwner].shares = totalSupply;
-        percentageOwners[_effectiveOwner].walletId = _effectiveOwner;
+        percentageOwners[_effectiveOwner].walletAddress = _effectiveOwner;
 
         owners.push(effectiveOwner);
     }
@@ -171,7 +171,7 @@ contract AssetToken {
 
         if (!isBuyerOwner) {
             owners.push(_buyer);
-            percentageOwners[_buyer].walletId = _buyer;
+            percentageOwners[_buyer].walletAddress = _buyer;
         }
 
         if (seller.shares == 0) removeOwner(_seller);

@@ -15,7 +15,7 @@ export class TokenizedAssetController {
     }
 
     @Get("audit/:contractAddress")
-    async auditAssetData(@Param() contractAddress: string) {
+    async auditAssetData(@Param() { contractAddress }) {
         return await this.tokenizedAssetService.auditAssetData(contractAddress);
     }
 }
