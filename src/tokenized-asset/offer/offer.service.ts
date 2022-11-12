@@ -122,6 +122,28 @@ export class OfferService {
         return ownership;
     }
 
+    async rejectOfferPayment(id: string) {
+        const offer = await this.offerRepository.findOneOrFail({
+            where: {
+                id: id,
+            },
+            relations: [
+                "ownership",
+                "currentBuyer",
+                "ownership.tokenizedAsset",
+                "ownership.user",
+            ],
+        });
+
+        if (offer.status.toString() !== OfferStatus.WAITING_PAYMENT.toString())
+            throw new ForbiddenException("Offer must be WAITING_PAYMENT");
+
+        offer.status = OfferStatus.AVAILABLE.toString();
+        offer.currentBuyer = null;
+
+        return await this.offerRepository.save(offer);
+    }
+
     async createOffer(data: CreateOfferDto) {
         const ownership = await this.ownershipRepository.findOneOrFail({
             where: {
@@ -131,18 +153,20 @@ export class OfferService {
         });
 
         if (data.isEffectiveTransfer && !ownership.isEffectiveOwner)
-            throw new ForbiddenException("Seller isn't effective owner");
+            throw new ForbiddenException("Vendedor não é proprietário efetivo");
 
         if (
             data.isEffectiveTransfer &&
             ownership.offers.some((o) => o.isEffectiveTransfer)
         )
             throw new ForbiddenException(
-                "Offer with effective transfer already exists for this ownership",
+                "Oferta com transferência de posse já existente",
             );
 
         if (data.percentage === 0 && !data.isEffectiveTransfer)
-            throw new ForbiddenException("Cannot offer zero percentage");
+            throw new ForbiddenException(
+                "Não é possível oferecer porcentagem 0",
+            );
 
         if (
             ownership.offers
@@ -156,7 +180,9 @@ export class OfferService {
                 data.percentage >
             ownership.percentageOwned
         )
-            throw new ForbiddenException("Not enough percentage to offer");
+            throw new ForbiddenException(
+                "Porcentagem insuficiente para oferta",
+            );
 
         const offer = this.offerRepository.create(data);
 
