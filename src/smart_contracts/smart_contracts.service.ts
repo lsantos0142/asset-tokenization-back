@@ -79,7 +79,7 @@ export class SmartContractsService {
 
         const NameContract = new this.web3.eth.Contract(
             contractAbi as any, // "as any" because typescript does not recognize "signature"
-            "0xd2a5bC10698FD955D1Fe6cb468a17809A08fd005",
+            "0x59Eb59f0AA3FD56b4b57DD73CC04119C31cf8a85",
             { from: account, gas: Number(process.env.GAS_VALUE) },
         );
         this.web3.eth.handleRevert = true;
