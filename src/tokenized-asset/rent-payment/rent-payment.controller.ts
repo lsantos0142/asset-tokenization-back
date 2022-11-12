@@ -6,10 +6,12 @@ import {
     ParseUUIDPipe,
     Post,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { CreateRentPaymentDto } from "./dto/create-rent-payment.dto";
 import { RentPaymentService } from "./rent-payment.service";
 
 @Controller("tokenized-asset/rent-payment")
+@ApiTags("Tokenized Assets / Rent Payments")
 export class RentPaymentController {
     constructor(private readonly rentPaymentService: RentPaymentService) {}
 
