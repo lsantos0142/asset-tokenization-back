@@ -217,4 +217,27 @@ export class SmartContractsService {
             throw new ForbiddenException(exception.message);
         }
     }
+
+    async getAllOwnersDetails(contractAddress: string) {
+        const [account] = await this.web3.eth.getAccounts();
+
+        const NameContract = new this.web3.eth.Contract(
+            contractAbi as any, // "as any" because typescript does not recognize "signature"
+            contractAddress,
+            { from: account, gas: Number(process.env.GAS_VALUE) },
+        );
+
+        try {
+            const response = await NameContract.methods
+                .getAllOwnersDetails()
+                .call();
+
+            Logger.log(JSON.stringify(response));
+
+            return response;
+        } catch (exception) {
+            Logger.log(exception);
+            throw exception;
+        }
+    }
 }

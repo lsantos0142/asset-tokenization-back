@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { SmartContractsModule } from "src/smart_contracts/smart_contracts.module";
+import { UsersModule } from "src/users/users.module";
 import { CollateralModule } from "./collateral/collateral.module";
 import { OfferModule } from "./offer/offer.module";
 import { OwnershipModule } from "./ownership/ownership.module";
@@ -14,6 +16,8 @@ import { TokenizedAssetService } from "./tokenized-asset.service";
         CollateralModule,
         OfferModule,
         RentPaymentModule,
+        SmartContractsModule,
+        UsersModule,
     ],
     controllers: [TokenizedAssetController],
     providers: [TokenizedAssetService],

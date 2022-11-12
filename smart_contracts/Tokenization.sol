@@ -21,6 +21,7 @@ contract AssetToken {
 
     struct Owner {
         uint shares;
+        address walletId;
         Collateral[] collaterals;
         RentPayment[] rentPayments;
     }
@@ -97,8 +98,17 @@ contract AssetToken {
         return owners;
     }
 
-    function getOwnerDetails(address _owner)  public view returns(Owner memory) {
+    function getOwnerDetails(address _owner) public view returns(Owner memory) {
         return percentageOwners[_owner];
+    }
+
+    function getAllOwnersDetails() public view returns (Owner[] memory){
+        Owner[] memory ownersResponse = new Owner[](owners.length);
+        for (uint i = 0; i < owners.length; i++) {
+            ownersResponse[i] = percentageOwners[owners[i]];
+            ownersResponse[i].walletId = owners[i];
+        }
+        return ownersResponse;
     }
 
     function getRentPaymentsByOwner(address _owner) public view onlyPlatformOrOwner returns(RentPayment[] memory) {

@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
+import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { TokenizedAsset } from "./entities/tokenized-asset.entity";
 
@@ -8,27 +10,17 @@ export class TokenizedAssetService {
     constructor(
         @InjectRepository(TokenizedAsset)
         private assetRepository: Repository<TokenizedAsset>,
+        private readonly smartContractsService: SmartContractsService,
+        private readonly userService: UsersService,
     ) {}
 
-    async getAllOwnershipsByAsset(id: string) {
-        const asset = await this.assetRepository.findOneOrFail({
-            where: {
-                id: id,
-            },
-            relations: ["ownerships"],
-        });
-
-        return asset.ownerships;
+    async getAll() {
+        return await this.assetRepository.find();
     }
 
-    async getEffectiveOwnerByAsset(id: string) {
-        const asset = await this.assetRepository.findOneOrFail({
-            where: {
-                id: id,
-            },
-            relations: ["ownerships", "ownerships.user"],
-        });
-
-        return asset.ownerships.find((o) => o.isEffectiveOwner);
+    async auditAssetData(contractAddress: string) {
+        const ownersData =
+            this.smartContractsService.getAllOwnersDetails(contractAddress);
+        const temp = this.userService.findOneOrFail({ walletId: "" });
     }
 }
