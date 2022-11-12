@@ -2,6 +2,9 @@ import { AutoMap } from "@automapper/classes";
 
 export class UserResponseDto {
     @AutoMap()
+    id: string;
+
+    @AutoMap()
     name: string;
 
     @AutoMap()
