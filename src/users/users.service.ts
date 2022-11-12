@@ -47,9 +47,7 @@ export class UsersService {
     }
 
     async findAll() {
-        return await this.usersRepository.find({
-            select: ["id", "name", "username", "walletAddress"],
-        });
+        return await this.usersRepository.find();
     }
 
     async store(data: CreateUserDto) {

@@ -3,5 +3,4 @@ export class CreateTokenizedAssetDto {
     address: string;
     usableArea: number;
     contractAddress: string;
-    deed: string;
 }

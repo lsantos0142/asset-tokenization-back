@@ -3,14 +3,14 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
 import { Not, Repository } from "typeorm";
-import { CreateOwnershipDto } from "../dto/create-ownership.dto";
-import { CreateTokenizationProposalDto } from "../dto/create-tokenization-proposal.dto";
 import { Ownership } from "../entities/ownership.entity";
 import {
     ProposalStatus,
     TokenizationProposal,
 } from "../entities/tokenization-proposal.entity";
 import { TokenizedAsset } from "../entities/tokenized-asset.entity";
+import { CreateOwnershipDto } from "../ownership/dto/create-ownership.dto";
+import { CreateTokenizationProposalDto } from "./dto/create-tokenization-proposal.dto";
 
 @Injectable()
 export class ProposalService {
@@ -112,7 +112,6 @@ export class ProposalService {
                 registration: proposal.registration,
                 contractAddress: contractAdress,
                 address: proposal.address,
-                deed: proposal.deed,
             },
             tokenizationProposal: proposal,
         };

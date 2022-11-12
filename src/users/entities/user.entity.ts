@@ -1,3 +1,4 @@
+import { AutoMap } from "@automapper/classes";
 import { hashSync } from "bcrypt";
 import { Offer } from "src/tokenized-asset/entities/offer.entity";
 import { Ownership } from "src/tokenized-asset/entities/ownership.entity";
@@ -17,28 +18,35 @@ import {
 
 @Entity({ name: "User" })
 export class User extends BaseEntity {
+    @AutoMap()
     @PrimaryGeneratedColumn("uuid")
     @PrimaryColumn({ type: "uuid" })
     public id: string;
 
+    @AutoMap()
     @Column({ type: "varchar" })
     public name: string;
 
+    @AutoMap()
     @Column({ type: "varchar", unique: true })
     public cpf: string;
 
+    @AutoMap()
     @Column({ type: "varchar", unique: true })
     public username: string;
 
     @Column({ type: "varchar" })
     public password: string;
 
+    @AutoMap()
     @Column({ type: "varchar", nullable: true })
     public walletAddress: string;
 
+    @AutoMap()
     @OneToMany(() => Ownership, (o) => o.user)
     public ownerships: Ownership[];
 
+    @AutoMap()
     @OneToMany(() => TokenizationProposal, (tp) => tp.user)
     public tokenizationProposal: TokenizationProposal[];
 
@@ -50,6 +58,7 @@ export class User extends BaseEntity {
         this.password = hashSync(this.password, 10);
     };
 
+    @AutoMap()
     @Column({ type: "bool" })
     isAdmin: boolean;
 

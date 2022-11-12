@@ -1,3 +1,4 @@
+import { AutoMap } from "@automapper/classes";
 import {
     BaseEntity,
     Column,
@@ -16,6 +17,7 @@ import { TokenizationProposal } from "./tokenization-proposal.entity";
 @Entity({ name: "TokenizedAsset" })
 export class TokenizedAsset extends BaseEntity {
     //#region baseEntity fields
+    @AutoMap()
     @PrimaryGeneratedColumn("uuid")
     @PrimaryColumn({ type: "uuid" })
     public id: string;
@@ -27,24 +29,27 @@ export class TokenizedAsset extends BaseEntity {
     public updatedAt: Date;
     //#endregion
 
+    @AutoMap()
     @Column({ type: "varchar" })
     public address: string;
 
+    @AutoMap()
     @Column({ type: "varchar" })
     public registration: string;
 
-    @Column({ type: "varchar" })
-    public deed: string;
-
+    @AutoMap()
     @Column({ type: "decimal" })
     public usableArea: number;
 
+    @AutoMap()
     @Column({ type: "varchar" })
     public contractAddress: string;
 
+    @AutoMap()
     @OneToMany(() => Ownership, (o) => o.tokenizedAsset)
     public ownerships: Ownership[];
 
+    @AutoMap(() => TokenizationProposal)
     @OneToOne(() => TokenizationProposal)
     @JoinColumn()
     public tokenizationProposal: TokenizationProposal;

@@ -9,10 +9,10 @@ import {
     Put,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { CreateCollateralDto } from "../dto/create-collateral.dto";
-import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
-import { SeizeCollateralDto } from "../dto/seize-collateral.dto";
 import { CollateralService } from "./collateral.service";
+import { CreateCollateralDto } from "./dto/create-collateral.dto";
+import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
+import { SeizeCollateralDto } from "./dto/seize-collateral.dto";
 
 @Controller("tokenized-asset/collateral")
 @ApiTags("Tokenized Assets / Collateral")

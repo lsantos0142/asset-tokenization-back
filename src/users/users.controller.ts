@@ -1,3 +1,5 @@
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 import {
     Body,
     Controller,
@@ -13,18 +15,27 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserResponseDto } from "./dto/user-response.dto";
+import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
 @Controller("users")
 @ApiTags("Users")
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(
+        private readonly usersService: UsersService,
+        @InjectMapper() private readonly mapper: Mapper,
+    ) {}
 
     // @UseGuards(AuthGuard("jwt"))
     // @ApiBearerAuth("JWT-auth")
     @Get()
     async index() {
-        return await this.usersService.findAll();
+        return this.mapper.mapArrayAsync(
+            await this.usersService.findAll(),
+            User,
+            UserResponseDto,
+        );
     }
 
     @Post()
@@ -36,7 +47,11 @@ export class UsersController {
     // @ApiBearerAuth("JWT-auth")
     @Get(":id")
     async show(@Param("id", new ParseUUIDPipe()) id: string) {
-        return await this.usersService.find(id);
+        return this.mapper.mapAsync(
+            await this.usersService.find(id),
+            User,
+            UserResponseDto,
+        );
     }
 
     // @UseGuards(AuthGuard("jwt"))

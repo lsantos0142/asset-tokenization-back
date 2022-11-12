@@ -1,3 +1,4 @@
+import { AutoMap } from "@automapper/classes";
 import { User } from "src/users/entities/user.entity";
 import {
     BaseEntity,
@@ -22,6 +23,7 @@ export enum OfferStatus {
 @Entity({ name: "Offer" })
 export class Offer extends BaseEntity {
     //#region baseEntity fields
+    @AutoMap()
     @PrimaryGeneratedColumn("uuid")
     @PrimaryColumn({ type: "uuid" })
     public id: string;
@@ -36,21 +38,27 @@ export class Offer extends BaseEntity {
     deletedAt: string;
     //#endregion
 
+    @AutoMap()
     @Column({ type: "decimal" })
     public percentage: number;
 
+    @AutoMap()
     @Column({ type: "decimal" })
     public amount: number;
 
+    @AutoMap()
     @Column({ type: "boolean" })
     public isEffectiveTransfer: boolean;
 
+    @AutoMap()
     @Column({ type: "enum", enum: OfferStatus, default: OfferStatus.AVAILABLE })
     public status: string;
 
+    @AutoMap(() => Ownership)
     @ManyToOne(() => Ownership, (o) => o.offers)
     public ownership: Ownership;
 
+    @AutoMap(() => User)
     @ManyToOne(() => User, (u) => u.requestedOffers)
     public currentBuyer: User;
 }

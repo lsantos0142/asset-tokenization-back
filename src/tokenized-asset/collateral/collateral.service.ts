@@ -7,11 +7,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
-import { CreateCollateralDto } from "../dto/create-collateral.dto";
-import { DeleteCollateralDto } from "../dto/delete-collateral.dto";
-import { SeizeCollateralDto } from "../dto/seize-collateral.dto";
 import { Collateral } from "../entities/collateral.entity";
 import { OwnershipService } from "../ownership/ownership.service";
+import { CreateCollateralDto } from "./dto/create-collateral.dto";
+import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
+import { SeizeCollateralDto } from "./dto/seize-collateral.dto";
 
 @Injectable()
 export class CollateralService {
@@ -59,7 +59,7 @@ export class CollateralService {
         expirationDateISOString,
         contractAddress,
     }: CreateCollateralDto) {
-        let expirationDate = new Date(expirationDateISOString);
+        const expirationDate = new Date(expirationDateISOString);
 
         const seller = await this.usersService.findUserByQuery({
             where: {
@@ -112,7 +112,7 @@ export class CollateralService {
             contractAddress: contractAddress,
         });
 
-        let bankCollateral = this.collateralRepository.create({
+        const bankCollateral = this.collateralRepository.create({
             bankWallet: bankWallet,
             percentage: collateralShares,
             expirationDate: expirationDateISOString,
@@ -129,7 +129,7 @@ export class CollateralService {
         expirationDateISOString,
         contractAddress,
     }: DeleteCollateralDto) {
-        let expirationDate = new Date(expirationDateISOString);
+        const expirationDate = new Date(expirationDateISOString);
 
         const owner = await this.usersService.findUserByQuery({
             where: {
@@ -162,7 +162,7 @@ export class CollateralService {
         if (!bankWallet)
             throw new ForbiddenException("Bank doesn't have wallet connected");
 
-        let collateral = ownerOwnership.collaterals.find(
+        const collateral = ownerOwnership.collaterals.find(
             (c) =>
                 c.bankWallet === bankWallet &&
                 c.expirationDate === expirationDateISOString &&
@@ -191,7 +191,7 @@ export class CollateralService {
     }
 
     async seizeCollateral(collateralId: string, data: SeizeCollateralDto) {
-        let collateral = await this.collateralRepository.findOne({
+        const collateral = await this.collateralRepository.findOne({
             where: { id: collateralId },
         });
 

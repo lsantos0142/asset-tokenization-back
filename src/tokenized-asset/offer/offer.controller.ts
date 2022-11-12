@@ -1,3 +1,5 @@
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 import {
     Body,
     Controller,
@@ -8,13 +10,18 @@ import {
     Put,
     Query,
 } from "@nestjs/common";
+import { Offer } from "../entities/offer.entity";
 import { AcceptOfferDto } from "./dto/accept-offer.dto";
 import { CreateOfferDto } from "./dto/create-offer.dto";
+import { OfferResponseDto } from "./dto/offer-response.dto";
 import { OfferService } from "./offer.service";
 
 @Controller("tokenized-asset/offer")
 export class OfferController {
-    constructor(private readonly offerService: OfferService) {}
+    constructor(
+        private readonly offerService: OfferService,
+        @InjectMapper() private readonly mapper: Mapper,
+    ) {}
 
     @Get("get-by-ownership/:id")
     getOffersByOwnership(@Param("id", new ParseUUIDPipe()) id: string) {
@@ -27,13 +34,21 @@ export class OfferController {
     }
 
     @Get("get-all")
-    getAllOffers(@Query("status") status: string) {
-        return this.offerService.getAllOffersByStatus(status);
+    async getAllOffers(@Query("status") status: string) {
+        return this.mapper.mapArrayAsync(
+            await this.offerService.getAllOffersByStatus(status),
+            Offer,
+            OfferResponseDto,
+        );
     }
 
     @Put("accept/")
-    acceptOffer(@Body() data: AcceptOfferDto) {
-        return this.offerService.acceptOffer(data);
+    async acceptOffer(@Body() data: AcceptOfferDto) {
+        return this.mapper.mapAsync(
+            await this.offerService.acceptOffer(data),
+            Offer,
+            OfferResponseDto,
+        );
     }
 
     @Put("validate-payment/:id")

@@ -1,5 +1,8 @@
+import { classes } from "@automapper/classes";
+import { AutomapperModule } from "@automapper/nestjs";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { TokenizedAssetProfile } from "src/profiles/tokenized-asset-profile";
 import { SmartContractsModule } from "src/smart_contracts/smart_contracts.module";
 import { UsersModule } from "src/users/users.module";
 import { Ownership } from "../entities/ownership.entity";
@@ -17,9 +20,10 @@ import { ProposalService } from "./proposal.service";
         ]),
         UsersModule,
         SmartContractsModule,
+        AutomapperModule.forRoot({ strategyInitializer: classes() }),
     ],
     controllers: [ProposalController],
-    providers: [ProposalService],
+    providers: [ProposalService, TokenizedAssetProfile],
     exports: [TypeOrmModule],
 })
 export class ProposalModule {}

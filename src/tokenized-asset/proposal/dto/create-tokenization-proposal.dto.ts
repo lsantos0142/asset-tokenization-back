@@ -10,7 +10,5 @@ export class CreateTokenizationProposalDto {
     @IsNotEmpty()
     registration: string;
     @IsNotEmpty()
-    deed: string;
-    @IsNotEmpty()
     userId: string;
 }

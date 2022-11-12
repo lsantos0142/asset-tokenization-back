@@ -1,3 +1,5 @@
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 import {
     Body,
     Controller,
@@ -7,21 +9,34 @@ import {
     Post,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { UpsertOwnershipDto } from "../dto/upsert-ownership.dto";
+import { Ownership } from "../entities/ownership.entity";
+import { OwnershipResponseDto } from "./dto/ownership-response.dto";
+import { UpsertOwnershipDto } from "./dto/upsert-ownership.dto";
 import { OwnershipService } from "./ownership.service";
 
 @Controller("tokenized-asset/ownership")
 @ApiTags("Tokenized Assets / Ownership")
 export class OwnershipController {
-    constructor(private readonly ownershipService: OwnershipService) {}
+    constructor(
+        private readonly ownershipService: OwnershipService,
+        @InjectMapper() private readonly mapper: Mapper,
+    ) {}
 
     @Get("get-by-user/:id")
-    getOwnershipsByUser(@Param("id", new ParseUUIDPipe()) id: string) {
-        return this.ownershipService.getOwnershipsByUser(id);
+    async getOwnershipsByUser(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.mapper.mapArrayAsync(
+            await this.ownershipService.getOwnershipsByUser(id),
+            Ownership,
+            OwnershipResponseDto,
+        );
     }
 
     @Post("transfer")
-    upsertOwnershipFromTransfer(@Body() data: UpsertOwnershipDto) {
-        return this.ownershipService.upsertOwnershipFromTransfer(data);
+    async upsertOwnershipFromTransfer(@Body() data: UpsertOwnershipDto) {
+        return this.mapper.mapAsync(
+            await this.ownershipService.upsertOwnershipFromTransfer(data),
+            Ownership,
+            OwnershipResponseDto,
+        );
     }
 }

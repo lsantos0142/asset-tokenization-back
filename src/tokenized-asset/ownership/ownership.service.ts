@@ -3,9 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
-import { UpsertOwnershipDto } from "../dto/upsert-ownership.dto";
 import { Ownership } from "../entities/ownership.entity";
 import { TokenizedAsset } from "../entities/tokenized-asset.entity";
+import { UpsertOwnershipDto } from "./dto/upsert-ownership.dto";
 
 @Injectable()
 export class OwnershipService {
