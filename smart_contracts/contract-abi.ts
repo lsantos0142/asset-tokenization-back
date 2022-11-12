@@ -3,80 +3,6 @@ export const contractAbi = [
         inputs: [
             {
                 internalType: "address",
-                name: "_bankId",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "_seller",
-                type: "address",
-            },
-            {
-                internalType: "uint256",
-                name: "_collateralShares",
-                type: "uint256",
-            },
-            {
-                internalType: "uint256",
-                name: "_expirationDate",
-                type: "uint256",
-            },
-        ],
-        name: "createCollateral",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "address",
-                name: "_ownerAddress",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "_bankAddress",
-                type: "address",
-            },
-            {
-                internalType: "uint256",
-                name: "_collateralShares",
-                type: "uint256",
-            },
-            {
-                internalType: "uint256",
-                name: "_expirationDate",
-                type: "uint256",
-            },
-        ],
-        name: "deleteCollateral",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint256",
-                name: "_amount",
-                type: "uint256",
-            },
-            {
-                internalType: "uint256",
-                name: "_paymentDate",
-                type: "uint256",
-            },
-        ],
-        name: "registerRentPayment",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "address",
                 name: "_effectiveOwner",
                 type: "address",
             },
@@ -166,6 +92,11 @@ export const contractAbi = [
                         type: "uint256",
                     },
                     {
+                        internalType: "address",
+                        name: "walletId",
+                        type: "address",
+                    },
+                    {
                         components: [
                             {
                                 internalType: "address",
@@ -209,11 +140,6 @@ export const contractAbi = [
                         name: "rentPayments",
                         type: "tuple[]",
                     },
-                    {
-                        internalType: "address",
-                        name: "walletId",
-                        type: "address",
-                    },
                 ],
                 indexed: false,
                 internalType: "struct AssetToken.Owner[]",
@@ -223,34 +149,6 @@ export const contractAbi = [
         ],
         name: "showPercentageOwners",
         type: "event",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint256",
-                name: "_transferShares",
-                type: "uint256",
-            },
-            {
-                internalType: "address",
-                name: "_seller",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "_buyer",
-                type: "address",
-            },
-            {
-                internalType: "bool",
-                name: "_isEffectiveOwnerTransfer",
-                type: "bool",
-            },
-        ],
-        name: "transferOwnership",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
     },
     {
         inputs: [],
@@ -292,6 +190,34 @@ export const contractAbi = [
         type: "function",
     },
     {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_bankId",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "_seller",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "_collateralShares",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
+                name: "_expirationDate",
+                type: "uint256",
+            },
+        ],
+        name: "createCollateral",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
         inputs: [],
         name: "creator",
         outputs: [
@@ -302,6 +228,34 @@ export const contractAbi = [
             },
         ],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_ownerAddress",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "_bankAddress",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "_collateralShares",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
+                name: "_expirationDate",
+                type: "uint256",
+            },
+        ],
+        name: "deleteCollateral",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -327,6 +281,11 @@ export const contractAbi = [
                         internalType: "uint256",
                         name: "shares",
                         type: "uint256",
+                    },
+                    {
+                        internalType: "address",
+                        name: "walletId",
+                        type: "address",
                     },
                     {
                         components: [
@@ -372,11 +331,6 @@ export const contractAbi = [
                         name: "rentPayments",
                         type: "tuple[]",
                     },
-                    {
-                        internalType: "address",
-                        name: "walletId",
-                        type: "address",
-                    },
                 ],
                 internalType: "struct AssetToken.Owner[]",
                 name: "",
@@ -395,6 +349,25 @@ export const contractAbi = [
             },
         ],
         name: "getCollateralNumber",
+        outputs: [
+            {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_owner",
+                type: "address",
+            },
+        ],
+        name: "getCollateralShares",
         outputs: [
             {
                 internalType: "uint256",
@@ -449,25 +422,6 @@ export const contractAbi = [
                 type: "address",
             },
         ],
-        name: "getCollateralShares",
-        outputs: [
-            {
-                internalType: "uint256",
-                name: "",
-                type: "uint256",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "address",
-                name: "_owner",
-                type: "address",
-            },
-        ],
         name: "getOwnerDetails",
         outputs: [
             {
@@ -476,6 +430,11 @@ export const contractAbi = [
                         internalType: "uint256",
                         name: "shares",
                         type: "uint256",
+                    },
+                    {
+                        internalType: "address",
+                        name: "walletId",
+                        type: "address",
                     },
                     {
                         components: [
@@ -520,11 +479,6 @@ export const contractAbi = [
                         internalType: "struct AssetToken.RentPayment[]",
                         name: "rentPayments",
                         type: "tuple[]",
-                    },
-                    {
-                        internalType: "address",
-                        name: "walletId",
-                        type: "address",
                     },
                 ],
                 internalType: "struct AssetToken.Owner",
@@ -665,6 +619,24 @@ export const contractAbi = [
         type: "function",
     },
     {
+        inputs: [
+            {
+                internalType: "uint256",
+                name: "_amount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
+                name: "_paymentDate",
+                type: "uint256",
+            },
+        ],
+        name: "registerRentPayment",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
         inputs: [],
         name: "totalSupply",
         outputs: [
@@ -675,6 +647,34 @@ export const contractAbi = [
             },
         ],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "uint256",
+                name: "_transferShares",
+                type: "uint256",
+            },
+            {
+                internalType: "address",
+                name: "_seller",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "_buyer",
+                type: "address",
+            },
+            {
+                internalType: "bool",
+                name: "_isEffectiveOwnerTransfer",
+                type: "bool",
+            },
+        ],
+        name: "transferOwnership",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
 ];

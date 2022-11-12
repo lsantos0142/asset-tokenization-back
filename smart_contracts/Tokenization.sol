@@ -73,6 +73,7 @@ contract AssetToken {
         effectiveOwner = _effectiveOwner;
         totalSupply = 1000;
         percentageOwners[_effectiveOwner].shares = totalSupply;
+        percentageOwners[_effectiveOwner].walletId = _effectiveOwner;
 
         owners.push(effectiveOwner);
     }
@@ -106,7 +107,6 @@ contract AssetToken {
         Owner[] memory ownersResponse = new Owner[](owners.length);
         for (uint i = 0; i < owners.length; i++) {
             ownersResponse[i] = percentageOwners[owners[i]];
-            ownersResponse[i].walletId = owners[i];
         }
         return ownersResponse;
     }
@@ -169,7 +169,10 @@ contract AssetToken {
 
         (bool isBuyerOwner,) =  isAddressOwner(_buyer);
 
-        if (!isBuyerOwner) owners.push(_buyer);
+        if (!isBuyerOwner) {
+            owners.push(_buyer);
+            percentageOwners[_buyer].walletId = _buyer;
+        }
 
         if (seller.shares == 0) removeOwner(_seller);
     }
