@@ -82,7 +82,7 @@ export class SmartContractsService {
             "0x59Eb59f0AA3FD56b4b57DD73CC04119C31cf8a85",
             { from: account, gas: Number(process.env.GAS_VALUE) },
         );
-
+        this.web3.eth.handleRevert = true;
         return JSON.stringify(
             await NameContract.methods.getAllOwnersDetails().call(),
         );
@@ -226,13 +226,7 @@ export class SmartContractsService {
         );
 
         try {
-            const response = await NameContract.methods
-                .getAllOwnersDetails()
-                .call();
-
-            Logger.log(JSON.stringify(response));
-
-            return response;
+            return await NameContract.methods.getAllOwnersDetails().call();
         } catch (exception) {
             Logger.log(exception);
             throw exception;

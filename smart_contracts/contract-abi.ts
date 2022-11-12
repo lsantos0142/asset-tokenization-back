@@ -93,7 +93,7 @@ export const contractAbi = [
                     },
                     {
                         internalType: "address",
-                        name: "walletId",
+                        name: "walletAddress",
                         type: "address",
                     },
                     {
@@ -284,7 +284,7 @@ export const contractAbi = [
                     },
                     {
                         internalType: "address",
-                        name: "walletId",
+                        name: "walletAddress",
                         type: "address",
                     },
                     {
@@ -433,7 +433,7 @@ export const contractAbi = [
                     },
                     {
                         internalType: "address",
-                        name: "walletId",
+                        name: "walletAddress",
                         type: "address",
                     },
                     {
@@ -611,7 +611,7 @@ export const contractAbi = [
             },
             {
                 internalType: "address",
-                name: "walletId",
+                name: "walletAddress",
                 type: "address",
             },
         ],

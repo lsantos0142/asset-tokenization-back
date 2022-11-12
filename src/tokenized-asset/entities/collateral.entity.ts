@@ -37,6 +37,6 @@ export class Collateral extends BaseEntity {
     @Column({ type: "varchar" })
     public expirationDate: string;
 
-    @ManyToOne((type) => Ownership, (uta) => uta.collaterals)
+    @ManyToOne(() => Ownership, (uta) => uta.collaterals)
     public ownership: Ownership;
 }

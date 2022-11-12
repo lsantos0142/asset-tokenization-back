@@ -33,6 +33,6 @@ export class RentPayment extends BaseEntity {
     @Column({ type: "decimal" })
     public amount: number;
 
-    @ManyToOne((type) => Ownership, (uta) => uta.rentPayments)
+    @ManyToOne(() => Ownership, (o) => o.rentPayments)
     public ownership: Ownership;
 }
