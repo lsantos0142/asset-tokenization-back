@@ -10,6 +10,7 @@ import {
     Put,
     Query,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Offer } from "../entities/offer.entity";
 import { AcceptOfferDto } from "./dto/accept-offer.dto";
 import { CreateOfferDto } from "./dto/create-offer.dto";
@@ -17,6 +18,7 @@ import { OfferResponseDto } from "./dto/offer-response.dto";
 import { OfferService } from "./offer.service";
 
 @Controller("tokenized-asset/offer")
+@ApiTags("Tokenized Assets / Offers")
 export class OfferController {
     constructor(
         private readonly offerService: OfferService,
@@ -42,13 +44,18 @@ export class OfferController {
         );
     }
 
-    @Put("accept/")
+    @Put("accept")
     async acceptOffer(@Body() data: AcceptOfferDto) {
         return this.mapper.mapAsync(
             await this.offerService.acceptOffer(data),
             Offer,
             OfferResponseDto,
         );
+    }
+
+    @Put("reject-payment/:id")
+    rejectOfferPayment(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.offerService.rejectOfferPayment(id);
     }
 
     @Put("validate-payment/:id")
