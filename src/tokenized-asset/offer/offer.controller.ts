@@ -30,6 +30,11 @@ export class OfferController {
         return this.offerService.getOffersByOwnership(id);
     }
 
+    @Get("get-by-user/:id")
+    getOffersByUser(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.offerService.getOffersByUser(id);
+    }
+
     @Get("get-by-id/:id")
     getOffersById(@Param("id", new ParseUUIDPipe()) id: string) {
         return this.offerService.getOffersById(id);
