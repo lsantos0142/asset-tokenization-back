@@ -34,6 +34,16 @@ export class CollateralController {
         return this.collateralService.createCollateral(data);
     }
 
+    @Put("reject/:id")
+    rejectOfferPayment(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.collateralService.rejectCollateral(id);
+    }
+
+    @Put("validate/:id")
+    validateOfferPayment(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.collateralService.validateCollateral(id);
+    }
+
     @Delete("delete")
     deleteCollateral(@Body() data: DeleteCollateralDto) {
         return this.collateralService.deleteCollateral(data);

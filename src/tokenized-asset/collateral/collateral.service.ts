@@ -7,7 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SmartContractsService } from "src/smart_contracts/smart_contracts.service";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
-import { Collateral } from "../entities/collateral.entity";
+import { Collateral, CollateralStatus } from "../entities/collateral.entity";
 import { OwnershipService } from "../ownership/ownership.service";
 import { CreateCollateralDto } from "./dto/create-collateral.dto";
 import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
@@ -77,12 +77,10 @@ export class CollateralService {
         );
 
         if (!seller.walletAddress)
-            throw new ForbiddenException(
-                "Seller doesn't have wallet connected",
-            );
+            throw new ForbiddenException("Nenhuma carteira conectada");
 
         if (!sellerOwnership)
-            throw new ForbiddenException("Seller isn't owner of asset");
+            throw new ForbiddenException("Não é dono do ativo");
 
         const sellerCollateralTotal = sellerOwnership.collaterals
             .map((c) => c.percentage)
@@ -92,7 +90,7 @@ export class CollateralService {
             collateralShares >
             sellerOwnership.percentageOwned - sellerCollateralTotal
         )
-            throw new ForbiddenException("Insuficient seller shares");
+            throw new ForbiddenException("Porcentagem insuficiente de posse");
 
         const { walletAddress: bankWallet } =
             await this.usersService.findUserByQuery({
@@ -102,20 +100,13 @@ export class CollateralService {
             });
 
         if (!bankWallet)
-            throw new ForbiddenException("Bank doesn't have wallet connected");
-
-        await this.smartContractsService.createCollateral({
-            bankWallet: bankWallet,
-            sellerWallet: seller.walletAddress,
-            collateralShares: Math.round(collateralShares * 1000),
-            expirationDate: Math.round(expirationDate.getTime() / 1000),
-            contractAddress: contractAddress,
-        });
+            throw new ForbiddenException("Banco não possui carteira conectada");
 
         const bankCollateral = this.collateralRepository.create({
             bankWallet: bankWallet,
             percentage: collateralShares,
             expirationDate: expirationDateISOString,
+            status: CollateralStatus.PENDING_CONFIRMATION.toString(),
         });
         bankCollateral.ownership = sellerOwnership;
 
@@ -223,5 +214,17 @@ export class CollateralService {
         });
 
         return collateral;
+    }
+
+    async rejectCollateral(id: string) {}
+
+    async validateCollateral(id: string) {
+        // await this.smartContractsService.createCollateral({
+        //     bankWallet: bankWallet,
+        //     sellerWallet: seller.walletAddress,
+        //     collateralShares: Math.round(collateralShares * 1000),
+        //     expirationDate: Math.round(expirationDate.getTime() / 1000),
+        //     contractAddress: contractAddress,
+        // });
     }
 }
