@@ -1,3 +1,5 @@
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 import {
     Body,
     Controller,
@@ -7,6 +9,7 @@ import {
     ParseUUIDPipe,
     Post,
     Put,
+    Query,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CollateralService } from "./collateral.service";
@@ -17,7 +20,10 @@ import { SeizeCollateralDto } from "./dto/seize-collateral.dto";
 @Controller("tokenized-asset/collateral")
 @ApiTags("Tokenized Assets / Collateral")
 export class CollateralController {
-    constructor(private readonly collateralService: CollateralService) {}
+    constructor(
+        @InjectMapper() private readonly mapper: Mapper,
+        private readonly collateralService: CollateralService,
+    ) {}
 
     @Get("get-by-user/:id")
     getCollateralByUser(@Param("id", new ParseUUIDPipe()) id: string) {
@@ -55,5 +61,10 @@ export class CollateralController {
         @Body() data: SeizeCollateralDto,
     ) {
         return this.collateralService.seizeCollateral(collateralId, data);
+    }
+
+    @Get("get-all")
+    async getAllCollaterals(@Query("status") status: string) {
+        return this.collateralService.getAllCollateralsByStatus(status);
     }
 }

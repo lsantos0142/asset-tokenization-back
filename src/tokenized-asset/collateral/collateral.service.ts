@@ -83,6 +83,12 @@ export class CollateralService {
             throw new ForbiddenException("Não é dono do ativo");
 
         const sellerCollateralTotal = sellerOwnership.collaterals
+            .filter(
+                (c) =>
+                    c.status === CollateralStatus.ACTIVE.toString() ||
+                    c.status ===
+                        CollateralStatus.PENDING_CONFIRMATION.toString(),
+            )
             .map((c) => c.percentage)
             .reduce((c, total) => Number(total) + Number(c), 0);
 
@@ -226,5 +232,42 @@ export class CollateralService {
         //     expirationDate: Math.round(expirationDate.getTime() / 1000),
         //     contractAddress: contractAddress,
         // });
+    }
+
+    async getAllCollateralsByStatus(status: string) {
+        const collaterals = await this.collateralRepository.find({
+            where: {
+                status: CollateralStatus[status],
+            },
+            relations: ["ownership", "ownership.tokenizedAsset"],
+        });
+
+        const wallets = collaterals.map((collateral) => {
+            return collateral.bankWallet;
+        });
+
+        const banks = await Promise.all(
+            wallets.map(async (wallet) => {
+                const bank = await this.usersService.findUserByQuery({
+                    where: {
+                        walletAddress: wallet,
+                    },
+                });
+
+                delete bank.updatedAt;
+                delete bank.createdAt;
+                delete bank.deletedAt;
+                delete bank.password; // mapper pra que? kkk
+                delete bank.hashedRt;
+
+                return bank;
+            }),
+        );
+
+        const response = collaterals.map((collateral, index) => {
+            return { ...collateral, bank: banks[index] };
+        });
+
+        return response;
     }
 }
