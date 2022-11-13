@@ -130,12 +130,16 @@ export class OfferService {
             relations: ["offers"],
         });
 
+        const availableOffers = ownership.offers.filter(
+            (o) => o.status.toString() === OfferStatus.AVAILABLE.toString(),
+        );
+
         if (data.isEffectiveTransfer && !ownership.isEffectiveOwner)
             throw new ForbiddenException("Seller isn't effective owner");
 
         if (
             data.isEffectiveTransfer &&
-            ownership.offers.some((o) => o.isEffectiveTransfer)
+            availableOffers.some((o) => o.isEffectiveTransfer)
         )
             throw new ForbiddenException(
                 "Offer with effective transfer already exists for this ownership",
@@ -145,12 +149,7 @@ export class OfferService {
             throw new ForbiddenException("Cannot offer zero percentage");
 
         if (
-            ownership.offers
-                .filter(
-                    (o) =>
-                        o.status.toString() ===
-                        OfferStatus.AVAILABLE.toString(),
-                )
+            availableOffers
                 .map((o) => o.percentage)
                 .reduce((sum, current) => Number(sum) + Number(current), 0) +
                 data.percentage >
