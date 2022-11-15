@@ -145,10 +145,10 @@ export class CollateralService {
         );
 
         if (!owner.walletAddress)
-            throw new ForbiddenException("Owner doesn't have wallet connected");
+            throw new ForbiddenException("Dono não possui carteira conectada");
 
         if (!ownerOwnership)
-            throw new ForbiddenException("Owner isn't owner of asset");
+            throw new ForbiddenException("Não é dono do ativo");
 
         const { walletAddress: bankWallet } =
             await this.usersService.findUserByQuery({
@@ -158,7 +158,7 @@ export class CollateralService {
             });
 
         if (!bankWallet)
-            throw new ForbiddenException("Bank doesn't have wallet connected");
+            throw new ForbiddenException("Banco não possui carteira conectada");
 
         const collateral = ownerOwnership.collaterals.find(
             (c) =>
@@ -178,7 +178,7 @@ export class CollateralService {
         let response: any = [];
 
         if (!collateral) {
-            throw new NotFoundException("Collateral not found");
+            throw new NotFoundException("Empréstimo não encontrado");
         } else {
             response = await this.collateralRepository.softDelete({
                 id: collateral.id,
