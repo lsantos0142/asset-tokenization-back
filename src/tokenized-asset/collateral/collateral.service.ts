@@ -23,7 +23,7 @@ export class CollateralService {
         private readonly ownershipService: OwnershipService,
     ) {}
 
-    async getCollateralByUser(id: string) {
+    async getCollateralByUser(id: string, status: string) {
         return await this.collateralRepository.find({
             where: {
                 ownership: {
@@ -31,6 +31,7 @@ export class CollateralService {
                         id: id,
                     },
                 },
+                status: CollateralStatus[status],
             },
             relations: ["ownership", "ownership.tokenizedAsset"],
         });
@@ -222,24 +223,91 @@ export class CollateralService {
         return collateral;
     }
 
-    async rejectCollateral(id: string) {}
+    async rejectCollateral(id: string) {
+        const collateral = await this.collateralRepository.findOne({
+            where: { id: id },
+        });
+
+        if (!collateral) throw new ForbiddenException("Empréstimo não existe");
+
+        if (
+            collateral.status.toString() !==
+            CollateralStatus.PENDING_CONFIRMATION.toString()
+        )
+            throw new ForbiddenException(
+                "Empréstimo deve estar com confirmação pendente",
+            );
+
+        collateral.status = CollateralStatus.CANCELED.toString();
+        await this.collateralRepository.save(collateral);
+
+        return collateral;
+    }
 
     async validateCollateral(id: string) {
-        // await this.smartContractsService.createCollateral({
-        //     bankWallet: bankWallet,
-        //     sellerWallet: seller.walletAddress,
-        //     collateralShares: Math.round(collateralShares * 1000),
-        //     expirationDate: Math.round(expirationDate.getTime() / 1000),
-        //     contractAddress: contractAddress,
-        // });
+        const collateral = await this.collateralRepository.findOne({
+            where: { id: id },
+            relations: [
+                "ownership",
+                "ownership.user",
+                "ownership.tokenizedAsset",
+            ],
+        });
+
+        if (!collateral) throw new ForbiddenException("Empréstimo não existe");
+
+        if (
+            collateral.status.toString() !==
+            CollateralStatus.PENDING_CONFIRMATION.toString()
+        )
+            throw new ForbiddenException(
+                "Empréstimo deve estar com confirmação pendente",
+            );
+
+        delete collateral.ownership.user.updatedAt;
+        delete collateral.ownership.user.createdAt;
+        delete collateral.ownership.user.deletedAt;
+        delete collateral.ownership.user.password; // mapper pra que? kkk
+        delete collateral.ownership.user.hashedRt;
+
+        collateral.status = CollateralStatus.ACTIVE.toString();
+
+        await this.smartContractsService.createCollateral({
+            bankWallet: collateral.bankWallet,
+            sellerWallet: collateral.ownership.user.walletAddress,
+            collateralShares: Math.round(collateral.percentage * 1000),
+            expirationDate: Math.round(
+                new Date(collateral.expirationDate).getTime() / 1000,
+            ),
+            contractAddress:
+                collateral.ownership.tokenizedAsset.contractAddress,
+        });
+
+        await this.collateralRepository.save(collateral);
+
+        return collateral;
     }
 
     async getAllCollateralsByStatus(status: string) {
-        const collaterals = await this.collateralRepository.find({
+        let collaterals = await this.collateralRepository.find({
             where: {
                 status: CollateralStatus[status],
             },
-            relations: ["ownership", "ownership.tokenizedAsset"],
+            relations: [
+                "ownership",
+                "ownership.tokenizedAsset",
+                "ownership.user",
+            ],
+        });
+
+        collaterals = collaterals.map((collateral) => {
+            delete collateral.ownership.user.updatedAt;
+            delete collateral.ownership.user.createdAt;
+            delete collateral.ownership.user.deletedAt;
+            delete collateral.ownership.user.password; // mapper pra que? kkk
+            delete collateral.ownership.user.hashedRt;
+
+            return collateral;
         });
 
         const wallets = collaterals.map((collateral) => {

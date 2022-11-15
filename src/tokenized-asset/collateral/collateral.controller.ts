@@ -26,8 +26,11 @@ export class CollateralController {
     ) {}
 
     @Get("get-by-user/:id")
-    getCollateralByUser(@Param("id", new ParseUUIDPipe()) id: string) {
-        return this.collateralService.getCollateralByUser(id);
+    getCollateralByUser(
+        @Param("id", new ParseUUIDPipe()) id: string,
+        @Query("status") status: string,
+    ) {
+        return this.collateralService.getCollateralByUser(id, status);
     }
 
     @Get("get-by-bank/:id")

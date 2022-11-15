@@ -35,7 +35,7 @@ export class TokenizedAssetService {
                     return {
                         amount: rp[0] / 1000,
                         shares: rp[1] / 1000,
-                        paymentDate: new Date(Number(rp[2])),
+                        paymentDate: new Date(Number(rp[2]) * 1000),
                     };
                 });
 
@@ -43,7 +43,7 @@ export class TokenizedAssetService {
                     return {
                         bankId: c[0],
                         collateralShares: c[1] / 1000,
-                        expirationDate: new Date(Number(c[2])),
+                        expirationDate: new Date(Number(c[2]) * 1000),
                     };
                 });
 
