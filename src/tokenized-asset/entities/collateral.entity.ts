@@ -17,6 +17,8 @@ export enum CollateralStatus {
     ACTIVE,
     SEIZED,
     CANCELED,
+    AWAITING_LOAN_PAYMENT_VALIDATION,
+    LOAN_PAID,
 }
 
 @Entity({ name: "Collateral" })

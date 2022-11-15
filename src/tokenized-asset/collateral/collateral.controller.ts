@@ -53,6 +53,11 @@ export class CollateralController {
         return this.collateralService.validateCollateral(id);
     }
 
+    @Put("register-loan-payment/:id")
+    registerLoanPayment(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.collateralService.registerLoanPayment(id);
+    }
+
     @Delete("delete")
     deleteCollateral(@Body() data: DeleteCollateralDto) {
         return this.collateralService.deleteCollateral(data);

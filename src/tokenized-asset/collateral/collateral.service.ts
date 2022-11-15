@@ -338,4 +338,21 @@ export class CollateralService {
 
         return response;
     }
+
+    async registerLoanPayment(id: string) {
+        const collateral = await this.collateralRepository.findOne({
+            where: { id: id },
+        });
+
+        if (!collateral) throw new ForbiddenException("Empréstimo não existe");
+
+        if (collateral.status.toString() !== CollateralStatus.ACTIVE.toString())
+            throw new ForbiddenException("Empréstimo deve estar ativo");
+
+        collateral.status =
+            CollateralStatus.AWAITING_LOAN_PAYMENT_VALIDATION.toString();
+        await this.collateralRepository.save(collateral);
+
+        return collateral;
+    }
 }
