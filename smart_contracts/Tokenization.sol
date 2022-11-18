@@ -22,6 +22,7 @@ contract AssetToken {
     struct Owner {
         uint shares;
         address walletAddress;
+        bool isEffectiveOwner;
         Collateral[] collaterals;
         RentPayment[] rentPayments;
     }
@@ -74,6 +75,7 @@ contract AssetToken {
         totalSupply = 1000;
         percentageOwners[_effectiveOwner].shares = totalSupply;
         percentageOwners[_effectiveOwner].walletAddress = _effectiveOwner;
+        percentageOwners[_effectiveOwner].isEffectiveOwner = true;
 
         owners.push(effectiveOwner);
     }
@@ -161,6 +163,8 @@ contract AssetToken {
         if (_isEffectiveOwnerTransfer) {
             require(_seller == effectiveOwner);
             effectiveOwner = _buyer;
+            seller.isEffectiveOwner = false;
+            percentageOwners[_buyer].isEffectiveOwner = true;
             emit showEffectiveOwner(effectiveOwner);
         }
 

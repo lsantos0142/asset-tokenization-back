@@ -31,7 +31,7 @@ export class TokenizedAssetService {
                     walletAddress: od[1],
                 });
 
-                const rentPayments = od[3]?.map((rp) => {
+                const rentPayments = od[4]?.map((rp) => {
                     return {
                         amount: rp[0] / 1000,
                         shares: rp[1] / 1000,
@@ -39,7 +39,7 @@ export class TokenizedAssetService {
                     };
                 });
 
-                const collaterals = od[2]?.map((c) => {
+                const collaterals = od[3]?.map((c) => {
                     return {
                         bankId: c[0],
                         collateralShares: c[1] / 1000,
@@ -56,6 +56,7 @@ export class TokenizedAssetService {
                         isAdmin: user.isAdmin,
                     },
                     shares: od[0] / 1000,
+                    isEffectiveOwner: od[2],
                     rentPayments: rentPayments,
                     collaterals: collaterals,
                 } as TokenizedAssetAuditResponseDto;

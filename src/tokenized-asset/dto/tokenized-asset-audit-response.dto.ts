@@ -5,6 +5,7 @@ import { RentPaymentAuditResponseDto } from "../rent-payment/dto/rent-payment-au
 export class TokenizedAssetAuditResponseDto {
     owner: UserResponseDto;
     shares: number;
+    isEffectiveOwner: boolean;
     rentPayments: RentPaymentAuditResponseDto[];
     collaterals: CollateralAuditResponseDto[];
 }
