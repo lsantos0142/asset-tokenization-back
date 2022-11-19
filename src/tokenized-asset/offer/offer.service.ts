@@ -35,10 +35,21 @@ export class OfferService {
             where: {
                 id: userId,
             },
-            relations: ["ownerships.offers.ownership.tokenizedAsset"],
+            relations: [
+                "ownerships.offers.ownership.tokenizedAsset",
+                "ownerships.offers.currentBuyer",
+            ],
         });
 
-        return user.ownerships.flatMap((o) => o.offers);
+        return user.ownerships
+            .flatMap((o) => o.offers)
+            .filter(
+                (o) =>
+                    ![
+                        OfferStatus.CANCELED.toString(),
+                        OfferStatus.ACCEPTED.toString(),
+                    ].includes(o.status.toString()),
+            );
     }
 
     async getOffersById(offerId: string) {

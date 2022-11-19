@@ -97,6 +97,11 @@ export const contractAbi = [
                         type: "address",
                     },
                     {
+                        internalType: "bool",
+                        name: "isEffectiveOwner",
+                        type: "bool",
+                    },
+                    {
                         components: [
                             {
                                 internalType: "address",
@@ -288,6 +293,11 @@ export const contractAbi = [
                         type: "address",
                     },
                     {
+                        internalType: "bool",
+                        name: "isEffectiveOwner",
+                        type: "bool",
+                    },
+                    {
                         components: [
                             {
                                 internalType: "address",
@@ -435,6 +445,11 @@ export const contractAbi = [
                         internalType: "address",
                         name: "walletAddress",
                         type: "address",
+                    },
+                    {
+                        internalType: "bool",
+                        name: "isEffectiveOwner",
+                        type: "bool",
                     },
                     {
                         components: [
@@ -613,6 +628,11 @@ export const contractAbi = [
                 internalType: "address",
                 name: "walletAddress",
                 type: "address",
+            },
+            {
+                internalType: "bool",
+                name: "isEffectiveOwner",
+                type: "bool",
             },
         ],
         stateMutability: "view",
