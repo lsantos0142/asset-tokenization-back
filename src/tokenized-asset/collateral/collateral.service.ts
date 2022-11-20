@@ -8,6 +8,7 @@ import { SmartContractsService } from "src/smart_contracts/smart_contracts.servi
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { Collateral, CollateralStatus } from "../entities/collateral.entity";
+import { OfferStatus } from "../entities/offer.entity";
 import { OwnershipService } from "../ownership/ownership.service";
 import { CreateCollateralDto } from "./dto/create-collateral.dto";
 import { DeleteCollateralDto } from "./dto/delete-collateral.dto";
@@ -68,6 +69,7 @@ export class CollateralService {
             },
             relations: [
                 "ownerships",
+                "ownerships.offers",
                 "ownerships.tokenizedAsset",
                 "ownerships.collaterals",
             ],
@@ -86,17 +88,34 @@ export class CollateralService {
         const sellerCollateralTotal = sellerOwnership.collaterals
             .filter(
                 (c) =>
-                    c.status === CollateralStatus.ACTIVE.toString() ||
-                    c.status ===
+                    c.status.toString() ===
+                        CollateralStatus.ACTIVE.toString() ||
+                    c.status.toString() ===
                         CollateralStatus.PENDING_CONFIRMATION.toString(),
             )
             .map((c) => c.percentage)
             .reduce((c, total) => Number(total) + Number(c), 0);
 
-        if (
-            collateralShares >
-            sellerOwnership.percentageOwned - sellerCollateralTotal
-        )
+        const sellerOfferTotal = sellerOwnership.offers
+            .filter(
+                (o) =>
+                    o.status.toString() === OfferStatus.AVAILABLE.toString() ||
+                    o.status.toString() ===
+                        OfferStatus.WAITING_PAYMENT.toString(),
+            )
+            .map((c) => c.percentage)
+            .reduce((c, total) => Number(total) + Number(c), 0);
+
+        collateralShares = Math.round(collateralShares * 1000) / 1000;
+        let total =
+            Math.round(
+                (sellerOwnership.percentageOwned -
+                    sellerCollateralTotal -
+                    sellerOfferTotal) *
+                    1000,
+            ) / 1000;
+
+        if (collateralShares > total)
             throw new ForbiddenException("Porcentagem insuficiente de posse");
 
         const { walletAddress: bankWallet } =
