@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
+import { CollateralStatus } from "../entities/collateral.entity";
 import { Offer, OfferStatus } from "../entities/offer.entity";
 import { Ownership } from "../entities/ownership.entity";
 import { OwnershipService } from "../ownership/ownership.service";
@@ -171,11 +172,13 @@ export class OfferService {
             where: {
                 id: data.ownershipId,
             },
-            relations: ["offers"],
+            relations: ["offers", "collaterals"],
         });
 
         const availableOffers = ownership.offers.filter(
-            (o) => o.status.toString() === OfferStatus.AVAILABLE.toString(),
+            (o) =>
+                o.status.toString() === OfferStatus.AVAILABLE.toString() ||
+                o.status.toString() === OfferStatus.WAITING_PAYMENT.toString(),
         );
 
         if (data.isEffectiveTransfer && !ownership.isEffectiveOwner)
@@ -194,16 +197,33 @@ export class OfferService {
                 "Não é possível oferecer porcentagem 0",
             );
 
-        if (
-            availableOffers
-                .map((o) => o.percentage)
-                .reduce((sum, current) => Number(sum) + Number(current), 0) +
-                data.percentage >
-            ownership.percentageOwned
-        )
-            throw new ForbiddenException(
-                "Porcentagem insuficiente para oferta",
-            );
+        const sellerCollateralTotal = ownership.collaterals
+            .filter(
+                (c) =>
+                    c.status.toString() ===
+                        CollateralStatus.ACTIVE.toString() ||
+                    c.status.toString() ===
+                        CollateralStatus.PENDING_CONFIRMATION.toString(),
+            )
+            .map((c) => c.percentage)
+            .reduce((c, total) => Number(total) + Number(c), 0);
+
+        const offered = Math.round(data.percentage * 1000) / 1000;
+
+        const sellerOfferTotal = availableOffers
+            .map((c) => c.percentage)
+            .reduce((c, total) => Number(total) + Number(c), 0);
+
+        let total =
+            Math.round(
+                (ownership.percentageOwned -
+                    sellerCollateralTotal -
+                    sellerOfferTotal) *
+                    1000,
+            ) / 1000;
+
+        if (offered > total)
+            throw new ForbiddenException("Porcentagem insuficiente de posse");
 
         const offer = this.offerRepository.create(data);
 
