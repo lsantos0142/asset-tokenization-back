@@ -13,6 +13,7 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { Offer } from "../entities/offer.entity";
 import { AcceptOfferDto } from "./dto/accept-offer.dto";
+import { AddReceiptDto } from "./dto/add-receipt.dto";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 import { OfferResponseDto } from "./dto/offer-response.dto";
 import { OfferService } from "./offer.service";
@@ -35,9 +36,19 @@ export class OfferController {
         return this.offerService.getOffersByUser(id);
     }
 
+    @Get("get-by-buyer/:id")
+    getOffersByBuyer(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.offerService.getOffersByBuyer(id);
+    }
+
     @Get("get-by-id/:id")
     getOffersById(@Param("id", new ParseUUIDPipe()) id: string) {
         return this.offerService.getOffersById(id);
+    }
+
+    @Post("add-receipt")
+    addReceiptOnOffer(@Body() data: AddReceiptDto) {
+        return this.offerService.addReceiptOnOffer(data);
     }
 
     @Get("get-all")

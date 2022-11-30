@@ -7,6 +7,7 @@ import { Offer, OfferStatus } from "../entities/offer.entity";
 import { Ownership } from "../entities/ownership.entity";
 import { OwnershipService } from "../ownership/ownership.service";
 import { AcceptOfferDto } from "./dto/accept-offer.dto";
+import { AddReceiptDto } from "./dto/add-receipt.dto";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 
 @Injectable()
@@ -53,6 +54,20 @@ export class OfferService {
             );
     }
 
+    async getOffersByBuyer(userId: string) {
+        const user = await this.usersService.findUserByQuery({
+            where: {
+                id: userId,
+            },
+            relations: [
+                "requestedOffers.ownership.tokenizedAsset",
+                "requestedOffers.ownership.user",
+            ],
+        });
+
+        return user.requestedOffers;
+    }
+
     async getOffersById(offerId: string) {
         const offer = await this.offerRepository.findOneOrFail({
             where: {
@@ -66,6 +81,17 @@ export class OfferService {
         });
 
         return offer;
+    }
+
+    async addReceiptOnOffer(data: AddReceiptDto) {
+        const offer = await this.offerRepository.findOneOrFail({
+            where: {
+                id: data.offerId,
+            },
+        });
+
+        offer.receipt = data.receipt;
+        await this.offerRepository.save(offer);
     }
 
     async getAllOffersByStatus(status: string) {
@@ -214,7 +240,7 @@ export class OfferService {
             .map((c) => c.percentage)
             .reduce((c, total) => Number(total) + Number(c), 0);
 
-        let total =
+        const total =
             Math.round(
                 (ownership.percentageOwned -
                     sellerCollateralTotal -

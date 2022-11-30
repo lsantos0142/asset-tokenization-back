@@ -42,6 +42,9 @@ export class TokenizationProposal extends BaseEntity {
     @Column({ type: "varchar" })
     public registration: string;
 
+    @Column({ type: "varchar", nullable: true })
+    public document: string;
+
     @AutoMap()
     @Column({ type: "decimal" })
     public usableArea: number;

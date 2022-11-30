@@ -118,4 +118,14 @@ export class ProposalService {
 
         return await this.createFirstOwnership(createOwnershipData);
     }
+
+    async getProposalDocument(id: string) {
+        const proposal = await this.proposalRepository.findOneOrFail({
+            where: {
+                id: id,
+            },
+        });
+
+        return proposal.document;
+    }
 }

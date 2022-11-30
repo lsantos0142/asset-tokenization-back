@@ -62,4 +62,9 @@ export class ProposalController {
             OwnershipResponseDto,
         );
     }
+
+    @Get("get-document/:id")
+    async getDocument(@Param("id", new ParseUUIDPipe()) id: string) {
+        return this.proposalService.getProposalDocument(id);
+    }
 }

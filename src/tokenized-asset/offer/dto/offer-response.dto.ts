@@ -16,6 +16,9 @@ export class OfferResponseDto {
     public isEffectiveTransfer: boolean;
 
     @AutoMap()
+    public receipt: string;
+
+    @AutoMap()
     public status: string;
 
     @AutoMap(() => OwnershipResponseDto)

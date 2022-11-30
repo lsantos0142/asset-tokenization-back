@@ -10,5 +10,7 @@ export class CreateTokenizationProposalDto {
     @IsNotEmpty()
     registration: string;
     @IsNotEmpty()
+    document: string;
+    @IsNotEmpty()
     userId: string;
 }

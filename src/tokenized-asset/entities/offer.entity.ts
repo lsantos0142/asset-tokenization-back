@@ -51,6 +51,10 @@ export class Offer extends BaseEntity {
     public isEffectiveTransfer: boolean;
 
     @AutoMap()
+    @Column({ type: "varchar", nullable: true })
+    public receipt: string;
+
+    @AutoMap()
     @Column({ type: "enum", enum: OfferStatus, default: OfferStatus.AVAILABLE })
     public status: string;
 
