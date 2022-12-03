@@ -33,7 +33,7 @@ export class TokenizedAssetService {
 
                 const rentPayments = od[4]?.map((rp) => {
                     return {
-                        amount: rp[0] / 1000,
+                        amount: rp[0] / 1000 / 1000,
                         shares: rp[1] / 1000,
                         paymentDate: new Date(Number(rp[2]) * 1000),
                     };

@@ -12,6 +12,8 @@ export class OwnershipResponseDto {
     @AutoMap()
     public percentageOwned: number;
 
+    public availablePercentage: number;
+
     // @AutoMap()
     // public collaterals: CollateralResponseDto[];
 

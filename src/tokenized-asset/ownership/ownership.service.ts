@@ -41,12 +41,10 @@ export class OwnershipService {
     }
 
     async getOwnershipsByUser(userId: string) {
-        const ownerships = this.ownershipRepository
-            .createQueryBuilder("ownership")
-            .innerJoinAndSelect("ownership.tokenizedAsset", "tokenizedAsset")
-            .innerJoinAndSelect("ownership.user", "user")
-            .where("user.id = :id", { id: userId })
-            .getMany();
+        const ownerships = this.ownershipRepository.find({
+            relations: ["tokenizedAsset", "user", "offers", "collaterals"],
+            where: { user: { id: userId } },
+        });
 
         return ownerships;
     }

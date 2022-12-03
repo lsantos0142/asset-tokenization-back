@@ -24,7 +24,7 @@ export class RentPaymentService {
         );
 
         await this.smartContractsService.registerRentPayment({
-            amount: data.amount,
+            amount: Math.round(data.amount * 1000),
             paymentDate: new Date(),
             contractAddress: data.contractAddress,
         });

@@ -1,4 +1,10 @@
-import { createMap, forMember, Mapper, mapWith } from "@automapper/core";
+import {
+    createMap,
+    forMember,
+    mapFrom,
+    Mapper,
+    mapWith,
+} from "@automapper/core";
 import { AutomapperProfile, InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
 import { TokenizedAssetResponseDto } from "src/tokenized-asset/dto/tokenized-asset-response.dto";
@@ -67,6 +73,31 @@ export class TokenizedAssetProfile extends AutomapperProfile {
                         TokenizedAsset,
                         (src) => src.tokenizedAsset,
                     ),
+                ),
+                forMember(
+                    (dst) => dst.availablePercentage,
+                    mapFrom((src) => {
+                        return (
+                            Math.round(
+                                (src.percentageOwned -
+                                    src.offers
+                                        ?.map((of) => of.percentage)
+                                        .reduce(
+                                            (c, total) =>
+                                                Number(total) + Number(c),
+                                            0,
+                                        ) -
+                                    src.collaterals
+                                        ?.map((c) => c.percentage)
+                                        .reduce(
+                                            (p, total) =>
+                                                Number(total) + Number(p),
+                                            0,
+                                        )) *
+                                    1000,
+                            ) / 1000
+                        );
+                    }),
                 ),
             );
 
