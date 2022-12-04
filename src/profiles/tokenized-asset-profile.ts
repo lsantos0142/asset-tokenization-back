@@ -8,7 +8,8 @@ import {
 import { AutomapperProfile, InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
 import { TokenizedAssetResponseDto } from "src/tokenized-asset/dto/tokenized-asset-response.dto";
-import { Offer } from "src/tokenized-asset/entities/offer.entity";
+import { CollateralStatus } from "src/tokenized-asset/entities/collateral.entity";
+import { Offer, OfferStatus } from "src/tokenized-asset/entities/offer.entity";
 import { Ownership } from "src/tokenized-asset/entities/ownership.entity";
 import { TokenizationProposal } from "src/tokenized-asset/entities/tokenization-proposal.entity";
 import { TokenizedAsset } from "src/tokenized-asset/entities/tokenized-asset.entity";
@@ -81,6 +82,11 @@ export class TokenizedAssetProfile extends AutomapperProfile {
                             Math.round(
                                 (src.percentageOwned -
                                     src.offers
+                                        .filter(
+                                            (of) =>
+                                                of.status.toString() ===
+                                                OfferStatus.AVAILABLE.toString(),
+                                        )
                                         ?.map((of) => of.percentage)
                                         .reduce(
                                             (c, total) =>
@@ -88,6 +94,13 @@ export class TokenizedAssetProfile extends AutomapperProfile {
                                             0,
                                         ) -
                                     src.collaterals
+                                        .filter(
+                                            (c) =>
+                                                c.status.toString() ===
+                                                    CollateralStatus.ACTIVE.toString() ||
+                                                c.status.toString() ===
+                                                    CollateralStatus.PENDING_CONFIRMATION.toString(),
+                                        )
                                         ?.map((c) => c.percentage)
                                         .reduce(
                                             (p, total) =>
