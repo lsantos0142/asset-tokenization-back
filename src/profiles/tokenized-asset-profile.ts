@@ -82,7 +82,7 @@ export class TokenizedAssetProfile extends AutomapperProfile {
                             Math.round(
                                 (src.percentageOwned -
                                     src.offers
-                                        .filter(
+                                        ?.filter(
                                             (of) =>
                                                 of.status.toString() ===
                                                 OfferStatus.AVAILABLE.toString(),
@@ -94,7 +94,7 @@ export class TokenizedAssetProfile extends AutomapperProfile {
                                             0,
                                         ) -
                                     src.collaterals
-                                        .filter(
+                                        ?.filter(
                                             (c) =>
                                                 c.status.toString() ===
                                                     CollateralStatus.ACTIVE.toString() ||
